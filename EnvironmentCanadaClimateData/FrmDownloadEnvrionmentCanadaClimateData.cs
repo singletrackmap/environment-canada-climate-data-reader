@@ -16,10 +16,10 @@ namespace HAWKLORRY
     public partial class FrmDownloadEnvrionmentCanadaClimateData : Form
     {
         private int[] _fields = null;
-        private string _id = "";
+        private string _id = "4922";
         private string _path = "";
-        private int _startYear = 2000;
-        private int _endYear = 2010;
+        private int _startYear = 1882;
+        private int _endYear = 1966;
         private static int[] FIELD_INDEX = { 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25 };
         private bool _isMultiple = false;
 
@@ -54,9 +54,8 @@ namespace HAWKLORRY
                         BaseWithProcess p = ss as BaseWithProcess;
                         backgroundWorker1.ReportProgress(p.ProcessPercentage, p.ProcessMessage); 
                     };
-                    _station.retrieveStationBasicInformation();
                 }
-                if (_station.Name.Length == 0)
+                if (!_station.Exist)
                     showInformationWindow("Couldn't find station " + _id);
                 else
                 {
@@ -111,7 +110,8 @@ namespace HAWKLORRY
                         }                        
                     }
                 };
-            bHelpStationID.Click += (s, ee) => { FrmHelp frm = new FrmHelp(); frm.ShowDialog(); };
+            lblStationIDHelp.LinkClicked += (s, ee) => { System.Diagnostics.Process.Start("http://wp.me/p2CzBq-5x"); };
+            //bHelpStationID.Click += (s, ee) => { FrmHelp frm = new FrmHelp(); frm.ShowDialog(); };
 
             
             //the output format
@@ -201,19 +201,33 @@ namespace HAWKLORRY
                         return;
                     }
 
+                    if (_endYear < _startYear)
+                    {
+                        showInformationWindow("The end year couldn't be earlier than start year.");
+                        return;
+                    }
+
+                    progressBar1.Maximum = (_endYear - _startYear + 1) * 2;
+
                     backgroundWorker1.RunWorkerAsync();
                 };
 
             //worker
             backgroundWorker1.ProgressChanged += (s, ee) => 
-            { 
-                richTextBox1.Text += ee.UserState.ToString() + Environment.NewLine; 
+            {
+                if (richTextBox1.Text.Length > 0)
+                    richTextBox1.AppendText(Environment.NewLine);
+                richTextBox1.AppendText(ee.UserState.ToString());
                 richTextBox1.SelectionStart = richTextBox1.Text.Length; 
                 richTextBox1.ScrollToCaret();
 
                 progressBar1.Value = ee.ProgressPercentage > 100 ? 100 : ee.ProgressPercentage;
             };
-            backgroundWorker1.RunWorkerCompleted += (s, ee) => { this.richTextBox1.Text += "finished"; showInformationWindow("Finished."); };
+            backgroundWorker1.RunWorkerCompleted += (s, ee) => 
+            {
+                this.progressBar1.Value = this.progressBar1.Maximum;
+                this.richTextBox1.Text += "finished";                                   
+            };
             backgroundWorker1.DoWork +=
                 (s, ee) =>
                 {
@@ -221,13 +235,28 @@ namespace HAWKLORRY
 
                     if(!_isMultiple)        //one station 
                     {
-                       if (!_station.save(_fields, _startYear, _endYear, _path, Format))
-                            showInformationWindow("Station " + _station.ID + " doesn't exist or there is no data between " + _startYear.ToString() + " and " + _endYear.ToString() );
-                    }
+                        bool status = _station.save(_fields, _startYear, _endYear, _path, Format);
+                        if (!status)
+                        {
+                            if (!_station.Exist)
+                                showInformationWindow("Station " + _station.ID + " doesn't exist!");
+                            else
+                                showInformationWindow("There is no data between "
+                                    + _startYear.ToString() + " and " + _endYear.ToString() + ". Please check output messages.");
+                        }
+                        else
+                        {
+                             int[] nodataYears = _station.NoDataYears;
+                             if (nodataYears.Length > 0)
+                                 showInformationWindow("Finished. Not all years has data. Please check output messages.");
+                             else
+                                 showInformationWindow("Finished.");
+                        }
+                     }
                     else                    //multiple stations
 	                {
                         foreach(Station onestation in _multiple_stations)
-                        {
+                        {                           
                             onestation.save(_fields, _startYear, _endYear, _path, Format);
                         }
 	                }
@@ -249,7 +278,13 @@ namespace HAWKLORRY
             _path = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             txtPath.Text = _path;
 
-            _id = txtStationID.Text;
+            txtStationID.Text = _id;
+            txtStartYear.Text = _startYear.ToString();
+            txtEndYear.Text = _endYear.ToString();
+
+            //_id = txtStationID.Text;
+            //_startYear = Convert.ToInt32(txtStartYear.Text);
+            //_endYear = Convert.ToInt32(txtEndYear.Text);
          }
 
         private void updateStationSelectionControl()

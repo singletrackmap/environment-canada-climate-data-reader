@@ -59,5 +59,12 @@ namespace HAWKLORRY.Properties {
                 resourceCulture = value;
             }
         }
+        
+        internal static System.Drawing.Icon logo {
+            get {
+                object obj = ResourceManager.GetObject("Icon1", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
     }
 }

@@ -40,7 +40,6 @@
             this.txtEndYear = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.bHelpStationID = new System.Windows.Forms.Button();
             this.bStationInfo = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
@@ -58,6 +57,7 @@
             this.rdbFormatArcSWATDbf = new System.Windows.Forms.RadioButton();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
+            this.lblStationIDHelp = new System.Windows.Forms.LinkLabel();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -66,7 +66,7 @@
             // 
             // bDownload
             // 
-            this.bDownload.Location = new System.Drawing.Point(13, 241);
+            this.bDownload.Location = new System.Drawing.Point(7, 180);
             this.bDownload.Name = "bDownload";
             this.bDownload.Size = new System.Drawing.Size(159, 23);
             this.bDownload.TabIndex = 0;
@@ -83,9 +83,9 @@
             // 
             // richTextBox1
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(12, 336);
+            this.richTextBox1.Location = new System.Drawing.Point(12, 334);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(690, 260);
+            this.richTextBox1.Size = new System.Drawing.Size(690, 262);
             this.richTextBox1.TabIndex = 2;
             this.richTextBox1.Text = "";
             // 
@@ -110,7 +110,7 @@
             "Spd of Max Gust (km/h)"});
             this.listFields.Location = new System.Drawing.Point(199, 19);
             this.listFields.Name = "listFields";
-            this.listFields.Size = new System.Drawing.Size(191, 244);
+            this.listFields.Size = new System.Drawing.Size(191, 184);
             this.listFields.TabIndex = 3;
             // 
             // txtPath
@@ -165,7 +165,6 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.bHelpStationID);
             this.groupBox1.Controls.Add(this.bStationInfo);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.label1);
@@ -175,19 +174,10 @@
             this.groupBox1.Controls.Add(this.txtStationID);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(288, 117);
+            this.groupBox1.Size = new System.Drawing.Size(288, 116);
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Stations";
-            // 
-            // bHelpStationID
-            // 
-            this.bHelpStationID.Location = new System.Drawing.Point(198, 88);
-            this.bHelpStationID.Name = "bHelpStationID";
-            this.bHelpStationID.Size = new System.Drawing.Size(84, 23);
-            this.bHelpStationID.TabIndex = 10;
-            this.bHelpStationID.Text = "Station ID?";
-            this.bHelpStationID.UseVisualStyleBackColor = true;
             // 
             // bStationInfo
             // 
@@ -257,7 +247,7 @@
             this.groupBox2.Controls.Add(this.txtStartYear);
             this.groupBox2.Controls.Add(this.txtEndYear);
             this.groupBox2.Controls.Add(this.label4);
-            this.groupBox2.Location = new System.Drawing.Point(12, 135);
+            this.groupBox2.Location = new System.Drawing.Point(12, 134);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(288, 81);
             this.groupBox2.TabIndex = 9;
@@ -269,7 +259,7 @@
             this.groupBox3.Controls.Add(this.bOpen);
             this.groupBox3.Controls.Add(this.bBrowseOutput);
             this.groupBox3.Controls.Add(this.txtPath);
-            this.groupBox3.Location = new System.Drawing.Point(12, 222);
+            this.groupBox3.Location = new System.Drawing.Point(12, 221);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(288, 78);
             this.groupBox3.TabIndex = 10;
@@ -296,7 +286,7 @@
             this.groupBox4.Controls.Add(this.listFields);
             this.groupBox4.Location = new System.Drawing.Point(306, 22);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(396, 278);
+            this.groupBox4.Size = new System.Drawing.Size(396, 211);
             this.groupBox4.TabIndex = 11;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Format";
@@ -364,16 +354,27 @@
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(12, 307);
+            this.progressBar1.Location = new System.Drawing.Point(12, 305);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(690, 23);
             this.progressBar1.TabIndex = 12;
+            // 
+            // lblStationIDHelp
+            // 
+            this.lblStationIDHelp.AutoSize = true;
+            this.lblStationIDHelp.Location = new System.Drawing.Point(303, 286);
+            this.lblStationIDHelp.Name = "lblStationIDHelp";
+            this.lblStationIDHelp.Size = new System.Drawing.Size(307, 13);
+            this.lblStationIDHelp.TabIndex = 10;
+            this.lblStationIDHelp.TabStop = true;
+            this.lblStationIDHelp.Text = "How to Get Environment Canada Climate Station ID From Name";
             // 
             // FrmDownloadEnvrionmentCanadaClimateData
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(714, 604);
+            this.Controls.Add(this.lblStationIDHelp);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
@@ -396,6 +397,7 @@
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -430,6 +432,6 @@
         private System.Windows.Forms.Button bOpen;
         private System.Windows.Forms.Button bStationInfo;
         private System.Windows.Forms.ProgressBar progressBar1;
-        private System.Windows.Forms.Button bHelpStationID;
+        private System.Windows.Forms.LinkLabel lblStationIDHelp;
     }
 }

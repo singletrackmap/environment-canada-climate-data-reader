@@ -17,6 +17,7 @@ namespace HAWKLORRY
         private static int TOTAL_PRECIPITATION_COL_INDEX = 19;
         private static int MAX_T_COL_INDEX = 5;
         private static int MIN_T_COL_INDEX = 7;
+        private static string WARNING_FORMAT = "*** Warning: {0} ***";
 
         private string _id = "";
         private string _name = "";
@@ -24,6 +25,9 @@ namespace HAWKLORRY
         private string _latitude = "";
         private string _longitude = "";
         private string _elevation = "";
+        private bool _hasTryToGetBasicInformation = false;
+
+        private List<int> _failureYears = null;
 
         public Station(string id)
         {
@@ -48,12 +52,26 @@ namespace HAWKLORRY
         /// <para>Line 4: "Longitude","-98.32"</para>
         /// <para>Line 5: "Elevation","341.40"</para>
         /// </remarks>
-        public void retrieveStationBasicInformation()
+        private void retrieveStationBasicInformation()
         {
-            if (_name.Length > 0) return;
+            if (_hasTryToGetBasicInformation) return;
 
+            _hasTryToGetBasicInformation = true;
             foreach (int year in TEST_YEARS)
                 if (retrieveStationBasicInformation(year)) return;
+        }
+
+        /// <summary>
+        /// If the station exists
+        /// </summary>
+        public bool Exist
+        {
+            get
+            {
+                if (!_hasTryToGetBasicInformation) retrieveStationBasicInformation();
+
+                return Name.Length > 0;
+            }
         }
 
         /// <summary>
@@ -139,33 +157,82 @@ namespace HAWKLORRY
         {
             using (HttpWebResponse response = retrieveAnnualDailyClimateData(year))
             {
-                System.Text.StringBuilder sb = new StringBuilder();
-                using (StreamReader reader = new StreamReader(response.GetResponseStream(), Encoding.Default))
+                using (Stream stream = response.GetResponseStream())
                 {
-                    int lineNum = 0;
-                    int headLine = 25;
-                    if (!keepHeader) headLine = 26;
-                    while (reader.Peek() >= 0)
+                    System.Text.StringBuilder sb = new StringBuilder();
+                    using (StreamReader reader = new StreamReader(stream, Encoding.Default))
                     {
-                        string line = reader.ReadLine();
-                        lineNum++;
+                        int lineNum = 0;
+                        int headLine = 25;
+                        if (!keepHeader) headLine = 26;
+                        while (reader.Peek() >= 0)
+                        {
+                            string line = reader.ReadLine();
+                            lineNum++;
 
-                        if (lineNum == 1 && !line.ToLower().Contains("station name")) return ""; //no data for this year
-                        if (lineNum < headLine) continue;
+                            if (lineNum == 1 && !line.ToLower().Contains("station name")) return ""; //no data for this year
+                            if (lineNum < headLine) continue;
 
-                        if (sb.Length > 0)
-                            sb.Append(Environment.NewLine);
-                        sb.Append(line);
+                            sb.AppendLine(line);
+                            sb.AppendLine(reader.ReadToEnd()); //read all other contents
+                            break;
+                        }
                     }
-                }
 
-                return sb.ToString();
+                    return sb.ToString();
+                }
             } 
+        }
+        
+        /// <summary>
+        /// clear no data year array
+        /// </summary>
+        private void clearFailureYears()
+        {
+            if (_failureYears == null) _failureYears = new List<int>();
+            _failureYears.Clear();
+        }
+
+        /// <summary>
+        /// record one no data year
+        /// </summary>
+        /// <param name="year"></param>
+        private void addFailureYear(int year)
+        {
+            setProgress(0, string.Format(WARNING_FORMAT, "No data is available for year " + year.ToString()));
+            _failureYears.Add(year);
+        }
+
+        /// <summary>
+        /// output all no data years
+        /// </summary>
+        private void outputFailureYear()
+        {
+            if (_failureYears == null && _failureYears.Count == 0) return;
+
+            setProgress(ProcessPercentage, "Following years don't have data");
+            foreach(int year in _failureYears)
+                setProgress(ProcessPercentage, year.ToString());
+        }
+
+        public int[] NoDataYears
+        {
+            get
+            {
+                if (_failureYears == null) _failureYears = new List<int>();
+                return _failureYears.ToArray();
+            }
         }
 
         public bool save(int[] fields,
             int startYear, int endYear, string destinationFolder, FormatType format)
         {
+            if (!Exist)
+            {
+                setProgress(0,string.Format(WARNING_FORMAT, "Station " + _id + " desn't exist"));
+                return false;
+            }
+
             if (format == FormatType.ARCSWAT_DBF)
                 return save2ArcSWATdbf(startYear, endYear, destinationFolder);
             else if (format == FormatType.ARCSWAT_TEXT)
@@ -205,24 +272,28 @@ namespace HAWKLORRY
             this.setProgress(0, fileName);
 
             //open the file and write the data
-            int oneStep = (endYear - startYear) / 2;
             int processPercent = 0;
             bool hasResults = false;
+            clearFailureYears();
             using (StreamWriter writer = new StreamWriter(fileName))
             {
                 for (int i = startYear; i <= endYear; i++)
                 {
                     setProgress(processPercent, string.Format("Downloading data for station: {0}, year: {1}", _id, i));
                     string resultsForOneYear = this.retrieveAnnualDailyClimateData(i, true);
-                    if (resultsForOneYear.Length == 0) continue;
+                    if (resultsForOneYear.Length == 0)
+                    {
+                        addFailureYear(i);
+                        continue;
+                    }
 
-                    processPercent += oneStep;
+                    processPercent += 1;
                     setProgress(processPercent, "Writing data");
 
                     if (format == FormatType.SIMPLE_CSV || format == FormatType.SIMPLE_TEXT)
                         hasResults = write2FreeFormat(resultsForOneYear, fields, writer, i == startYear, format);
 
-                    processPercent += oneStep;
+                    processPercent += 1;
                 }
             }
 
@@ -277,8 +348,7 @@ namespace HAWKLORRY
                         if (format == FormatType.SIMPLE_CSV)
                             sb.Append(",");
                         sb.Append(formatFreeFormatData(csv[field], format, false));
-                    }
-
+                    }                    
                     sb.AppendLine();
                 }
             }
@@ -308,20 +378,24 @@ namespace HAWKLORRY
             this.setProgress(0, pFile);
             this.setProgress(0, tFile);
 
-            int oneStep = (endYear - startYear) / 2;
             int processPercent = 0;
             bool hasResults = false;
             string numberForamt = "F1";
             string temperatureFormat = "{0:"+numberForamt+"},{1:"+numberForamt+"}";
             StringBuilder pSb = new StringBuilder();
             StringBuilder tSb = new StringBuilder();
+            clearFailureYears();
             for (int i = startYear; i <= endYear; i++)
             {
                 setProgress(processPercent, string.Format("Downloading data for station: {0}, year: {1}", _id, i));
                 string resultsForOneYear = this.retrieveAnnualDailyClimateData(i, true);
-                if (resultsForOneYear.Length == 0) continue;
+                if (resultsForOneYear.Length == 0)
+                {
+                    addFailureYear(i);
+                    continue;
+                }
 
-                processPercent += oneStep;
+                processPercent += 1;
                 setProgress(processPercent, "Writing data");
 
                 using (CachedCsvReader csv = new CachedCsvReader(new StringReader(resultsForOneYear), true))
@@ -353,7 +427,7 @@ namespace HAWKLORRY
                         }
                     }
                 }
-                processPercent += oneStep;
+                processPercent += 1;
             }
 
             if (pSb.Length > 0)
@@ -398,17 +472,21 @@ namespace HAWKLORRY
 
             DbfRecord pRec = new DbfRecord(pDBF.Header);
             DbfRecord tRec = new DbfRecord(tDBF.Header);
-
-            int oneStep = (endYear - startYear) / 2;
+          
             int processPercent = 0;
             bool hasResults = false;
+            clearFailureYears();
             for (int i = startYear; i <= endYear; i++)
             {
                 setProgress(processPercent, string.Format("Downloading data for station: {0}, year: {1}", _id, i));
                 string resultsForOneYear = this.retrieveAnnualDailyClimateData(i, true);
-                if (resultsForOneYear.Length == 0) continue;
+                if (resultsForOneYear.Length == 0)
+                {
+                    addFailureYear(i);
+                    continue;
+                }
 
-                processPercent += oneStep;
+                processPercent += 1;
                 setProgress(processPercent, "Writing data");
 
                 using (CachedCsvReader csv = new CachedCsvReader(new StringReader(resultsForOneYear), true))
@@ -433,7 +511,7 @@ namespace HAWKLORRY
                         }
                     }
                 }
-                processPercent += oneStep;
+                processPercent += 1;
             }
             pDBF.Close();
             tDBF.Close();
