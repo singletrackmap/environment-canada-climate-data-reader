@@ -39,6 +39,11 @@ namespace HAWKLORRY
             rdbOneStation.CheckedChanged += (s, ee) => { updateStationSelectionControl(); };
             bStationInfo.Click += (s, ee) => 
             {
+                //test EC
+                EC ec = new EC();
+                ec.getAllInformation();
+                return;
+
                 //check station id
                 if (rdbOneStation.Checked && _id.Length == 0)
                 {
@@ -111,6 +116,20 @@ namespace HAWKLORRY
                     }
                 };
             lblStationIDHelp.LinkClicked += (s, ee) => { System.Diagnostics.Process.Start("http://wp.me/p2CzBq-5x"); };
+            lblLatestVersion.LinkClicked += (s, ee) => { System.Diagnostics.Process.Start("https://environment-canada-climate-data-reader.googlecode.com/svn/trunk/Doc/Environment_Canada_Climate_Data_Reader.zip"); };
+            lblFeedback.LinkClicked += (s, ee) => 
+            {
+                try
+                {
+                    System.Diagnostics.Process.Start("mailto:hawklorry@gmail.com");
+                }
+                catch
+                {
+                    System.Windows.Forms.Clipboard.SetText("hawklorry@gmail.com");
+                    showInformationWindow("My email address has been copyied to clipboard.");
+                }                
+            };
+ 
             //bHelpStationID.Click += (s, ee) => { FrmHelp frm = new FrmHelp(); frm.ShowDialog(); };
 
             
@@ -256,10 +275,8 @@ namespace HAWKLORRY
                             }
                             else
                             {
-                                int[] nodataYears = _station.NoDataYears;
-                                if (nodataYears.Length > 0)
-                                    msg = "Finished. Not all years has data. Please check output messages.";
-                                else
+                                msg = _station.WarningMessage;
+                                if (msg.Length == 0)
                                     msg = "Finished.";
                             }
                         }
