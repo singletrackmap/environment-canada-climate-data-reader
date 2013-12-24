@@ -58,6 +58,7 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.lblStationIDHelp = new System.Windows.Forms.LinkLabel();
+            this.bSelectAll = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -66,7 +67,7 @@
             // 
             // bDownload
             // 
-            this.bDownload.Location = new System.Drawing.Point(7, 180);
+            this.bDownload.Location = new System.Drawing.Point(6, 209);
             this.bDownload.Name = "bDownload";
             this.bDownload.Size = new System.Drawing.Size(159, 23);
             this.bDownload.TabIndex = 0;
@@ -277,6 +278,7 @@
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.bSelectAll);
             this.groupBox4.Controls.Add(this.rdbFormatSWATInput);
             this.groupBox4.Controls.Add(this.rdbFormatFreeCSV);
             this.groupBox4.Controls.Add(this.rdbFormatFreeText);
@@ -286,7 +288,7 @@
             this.groupBox4.Controls.Add(this.listFields);
             this.groupBox4.Location = new System.Drawing.Point(306, 22);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(396, 211);
+            this.groupBox4.Size = new System.Drawing.Size(396, 238);
             this.groupBox4.TabIndex = 11;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Format";
@@ -369,6 +371,15 @@
             this.lblStationIDHelp.TabStop = true;
             this.lblStationIDHelp.Text = "How to Get Environment Canada Climate Station ID From Name";
             // 
+            // bSelectAll
+            // 
+            this.bSelectAll.Location = new System.Drawing.Point(199, 209);
+            this.bSelectAll.Name = "bSelectAll";
+            this.bSelectAll.Size = new System.Drawing.Size(83, 23);
+            this.bSelectAll.TabIndex = 4;
+            this.bSelectAll.Text = "Select All";
+            this.bSelectAll.UseVisualStyleBackColor = true;
+            // 
             // FrmDownloadEnvrionmentCanadaClimateData
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -433,5 +444,6 @@
         private System.Windows.Forms.Button bStationInfo;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.LinkLabel lblStationIDHelp;
+        private System.Windows.Forms.Button bSelectAll;
     }
 }
