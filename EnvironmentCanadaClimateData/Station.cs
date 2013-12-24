@@ -28,6 +28,7 @@ namespace HAWKLORRY
         private bool _hasTryToGetBasicInformation = false;
 
         private List<int> _failureYears = null;
+        private List<int> _uncompletedYears = null;
 
         public Station(string id)
         {
@@ -183,7 +184,11 @@ namespace HAWKLORRY
                 }
             } 
         }
-        
+
+        #region Warning Message
+
+        #region No data Year
+
         /// <summary>
         /// clear no data year array
         /// </summary>
@@ -199,7 +204,7 @@ namespace HAWKLORRY
         /// <param name="year"></param>
         private void addFailureYear(int year)
         {
-            setProgress(0, string.Format(WARNING_FORMAT, "No data is available for year " + year.ToString()));
+            setProgress(ProcessPercentage, string.Format(WARNING_FORMAT, "No data is available for year " + year.ToString()));
             _failureYears.Add(year);
         }
 
@@ -215,14 +220,71 @@ namespace HAWKLORRY
                 setProgress(ProcessPercentage, year.ToString());
         }
 
-        public int[] NoDataYears
+        #endregion 
+
+        #region Uncompleted Years
+
+        private void clearUncompletedYears()
+        {
+            if (_uncompletedYears == null) _uncompletedYears = new List<int>();
+            this._uncompletedYears.Clear();
+        }
+
+        private void addUncompletedYear(int year)
+        {
+            setProgress(ProcessPercentage, string.Format(WARNING_FORMAT, "The data of year " + year.ToString() + " is not completed"));
+            _failureYears.Add(year);
+        }
+
+        private void checkLastDayofYear(string date)
+        {
+            DateTime lastDay = DateTime.Now;
+            if (DateTime.TryParse(date, out lastDay))
+                if (lastDay.Month != 12 || lastDay.Day != 31)
+                    addUncompletedYear(lastDay.Year);
+        }
+
+        #endregion
+
+        private static int NUM_OF_COLUMN_OUTPUT_YEAR = 5;
+
+        public string WarningMessage
         {
             get
             {
-                if (_failureYears == null) _failureYears = new List<int>();
-                return _failureYears.ToArray();
+                StringBuilder sb = new StringBuilder();
+                if (_failureYears != null && _failureYears.Count > 0)
+                {
+                    sb.AppendLine("There is no data in following year.");
+                    for (int i = 0; i < _failureYears.Count; i++)
+                    {
+                        sb.Append(_failureYears[i]);
+                        if (i % NUM_OF_COLUMN_OUTPUT_YEAR < NUM_OF_COLUMN_OUTPUT_YEAR - 1)
+                            sb.Append("\t");
+                        else
+                            sb.Append(Environment.NewLine);
+                    }
+                    sb.AppendLine();
+                }
+                if (_uncompletedYears != null && _uncompletedYears.Count > 0)
+                {
+                    if (sb.Length > 0) sb.AppendLine();
+                    sb.AppendLine("The data of following year is uncompleted.");
+                    for (int i = 0; i < _uncompletedYears.Count; i++)
+                    {
+                        sb.Append(_uncompletedYears[i]);
+                        if (i % NUM_OF_COLUMN_OUTPUT_YEAR < NUM_OF_COLUMN_OUTPUT_YEAR - 1)
+                            sb.Append("\t");
+                        else
+                            sb.Append(Environment.NewLine);
+                    }
+                }
+
+                return sb.ToString();
             }
-        }
+        } 
+
+        #endregion
 
         public bool save(int[] fields,
             int startYear, int endYear, string destinationFolder, FormatType format)
@@ -275,6 +337,7 @@ namespace HAWKLORRY
             int processPercent = 0;
             bool hasResults = false;
             clearFailureYears();
+            clearUncompletedYears();
             using (StreamWriter writer = new StreamWriter(fileName))
             {
                 for (int i = startYear; i <= endYear; i++)
@@ -325,6 +388,7 @@ namespace HAWKLORRY
             {
                 if (csv.FieldCount < 27) return false;
 
+                string date = "";
                 if (needWriteHeader)
                 {
                     string[] fieldNames = csv.GetFieldHeaders();
@@ -340,7 +404,7 @@ namespace HAWKLORRY
                 }
                 while (csv.ReadNextRecord())
                 {
-                    string date = csv[0];
+                    date = csv[0];
                     sb.Append(formatFreeFormatData(date, format, true));
 
                     foreach (int field in fields)
@@ -351,6 +415,8 @@ namespace HAWKLORRY
                     }                    
                     sb.AppendLine();
                 }
+
+                checkLastDayofYear(date);
             }
             if (sb.Length > 0)
                 writer.Write(sb.ToString());
@@ -385,6 +451,7 @@ namespace HAWKLORRY
             StringBuilder pSb = new StringBuilder();
             StringBuilder tSb = new StringBuilder();
             clearFailureYears();
+            clearUncompletedYears();
             for (int i = startYear; i <= endYear; i++)
             {
                 setProgress(processPercent, string.Format("Downloading data for station: {0}, year: {1}", _id, i));
@@ -403,6 +470,8 @@ namespace HAWKLORRY
                     if (csv.FieldCount >= 27)
                     {
                         hasResults = true;
+
+                        string lastDay = "";
                         while (csv.ReadNextRecord())
                         {
                             //add starting date
@@ -416,6 +485,7 @@ namespace HAWKLORRY
                                     tSb.AppendLine(startDate);
                                 }
                             }
+                            lastDay = csv[0];
                             
                             //write data                            
                             double p = ClimateString2Double(csv[TOTAL_PRECIPITATION_COL_INDEX]);
@@ -425,6 +495,7 @@ namespace HAWKLORRY
                             double t_min = ClimateString2Double(csv[MIN_T_COL_INDEX]);
                             tSb.AppendLine(string.Format(temperatureFormat, t_max, t_min));
                         }
+                        checkLastDayofYear(lastDay);
                     }
                 }
                 processPercent += 1;
@@ -476,6 +547,7 @@ namespace HAWKLORRY
             int processPercent = 0;
             bool hasResults = false;
             clearFailureYears();
+            clearUncompletedYears();
             for (int i = startYear; i <= endYear; i++)
             {
                 setProgress(processPercent, string.Format("Downloading data for station: {0}, year: {1}", _id, i));
@@ -494,9 +566,11 @@ namespace HAWKLORRY
                     if (csv.FieldCount >= 27)
                     {
                         hasResults = true;
+
+                        string date = "";
                         while (csv.ReadNextRecord())
                         {
-                            string date = csv[0];
+                            date = csv[0];
                             double p = ClimateString2Double(csv[TOTAL_PRECIPITATION_COL_INDEX]);
                             pRec[0] = date;
                             pRec[1] = p.ToString();
@@ -509,6 +583,7 @@ namespace HAWKLORRY
                             tRec[2] = t_min.ToString();
                             tDBF.Write(tRec, true);
                         }
+                        checkLastDayofYear(date);
                     }
                 }
                 processPercent += 1;
