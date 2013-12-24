@@ -64,6 +64,7 @@
     <Compile Include="csv\ParseErrorAction.cs" />
     <Compile Include="csv\Resources\ExceptionMessage.Designer.cs" />
     <Compile Include="csv\ValueTrimmingOptions.cs" />
+    <Compile Include="EC.cs" />
     <Compile Include="FastDBF\DbfColumn.cs" />
     <Compile Include="FastDBF\DbfDataTruncateException.cs" />
     <Compile Include="FastDBF\DbfFile.cs" />
