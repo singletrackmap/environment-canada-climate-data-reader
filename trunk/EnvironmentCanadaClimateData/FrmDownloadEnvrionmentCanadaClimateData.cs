@@ -138,6 +138,11 @@ namespace HAWKLORRY
                     if(f.Count > 0)
                         _fields = f.ToArray();
                 };
+            bSelectAll.Click += (s, ee) => 
+            {
+                for (int i = 0; i < listFields.Items.Count; i++)
+                    listFields.SetItemCheckState(i, CheckState.Checked);
+            };
 
             //select output folder
             bBrowseOutput.Click +=
@@ -208,6 +213,7 @@ namespace HAWKLORRY
                     }
 
                     progressBar1.Maximum = (_endYear - _startYear + 1) * 2;
+                    _maxValueofProgressBar = progressBar1.Maximum;
 
                     backgroundWorker1.RunWorkerAsync();
                 };
@@ -221,12 +227,13 @@ namespace HAWKLORRY
                 richTextBox1.SelectionStart = richTextBox1.Text.Length; 
                 richTextBox1.ScrollToCaret();
 
-                progressBar1.Value = ee.ProgressPercentage > 100 ? 100 : ee.ProgressPercentage;
+                progressBar1.Value =
+                    ee.ProgressPercentage > progressBar1.Maximum ? progressBar1.Maximum : ee.ProgressPercentage;
             };
             backgroundWorker1.RunWorkerCompleted += (s, ee) => 
             {
-                this.progressBar1.Value = this.progressBar1.Maximum;
-                this.richTextBox1.Text += "finished";                                   
+                //this.progressBar1.Value = this.progressBar1.Maximum;
+                //this.richTextBox1.Text += "finished";                                   
             };
             backgroundWorker1.DoWork +=
                 (s, ee) =>
@@ -235,23 +242,33 @@ namespace HAWKLORRY
 
                     if(!_isMultiple)        //one station 
                     {
-                        bool status = _station.save(_fields, _startYear, _endYear, _path, Format);
-                        if (!status)
-                        {
-                            if (!_station.Exist)
-                                showInformationWindow("Station " + _station.ID + " doesn't exist!");
+                        string msg = "";
+                        try
+                        {                            
+                            bool status = _station.save(_fields, _startYear, _endYear, _path, Format);
+                            if (!status)
+                            {
+                                if (!_station.Exist)
+                                    msg = "Station " + _station.ID + " doesn't exist!";
+                                else
+                                    msg = "There is no data between "
+                                        + _startYear.ToString() + " and " + _endYear.ToString() + ". Please check output messages.";
+                            }
                             else
-                                showInformationWindow("There is no data between "
-                                    + _startYear.ToString() + " and " + _endYear.ToString() + ". Please check output messages.");
+                            {
+                                int[] nodataYears = _station.NoDataYears;
+                                if (nodataYears.Length > 0)
+                                    msg = "Finished. Not all years has data. Please check output messages.";
+                                else
+                                    msg = "Finished.";
+                            }
                         }
-                        else
+                        catch (System.Exception e)
                         {
-                             int[] nodataYears = _station.NoDataYears;
-                             if (nodataYears.Length > 0)
-                                 showInformationWindow("Finished. Not all years has data. Please check output messages.");
-                             else
-                                 showInformationWindow("Finished.");
+                            msg = e.Message;
                         }
+                        backgroundWorker1.ReportProgress(_maxValueofProgressBar, msg);
+                        showInformationWindow(msg);
                      }
                     else                    //multiple stations
 	                {
@@ -265,7 +282,8 @@ namespace HAWKLORRY
             //open the output folder
             bOpen.Click += (s, ee) => { if (System.IO.Directory.Exists(_path)) System.Diagnostics.Process.Start(_path); };
         }
-        
+
+        private int _maxValueofProgressBar = 100;
 
         private void FrmDownloadEnvrionmentCanadaClimateData_Load(object sender, EventArgs e)
         {
@@ -300,6 +318,7 @@ namespace HAWKLORRY
         {
             listFields.Enabled =
                 rdbFormatFreeCSV.Checked || rdbFormatFreeText.Checked;
+            bSelectAll.Enabled = listFields.Enabled;
         }
 
         private FormatType Format
