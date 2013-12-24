@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FrmDownloadEnvrionmentCanadaClimateData));
             this.bDownload = new System.Windows.Forms.Button();
             this.txtStationID = new System.Windows.Forms.TextBox();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
@@ -50,6 +51,7 @@
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.bOpen = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.bSelectAll = new System.Windows.Forms.Button();
             this.rdbFormatSWATInput = new System.Windows.Forms.RadioButton();
             this.rdbFormatFreeCSV = new System.Windows.Forms.RadioButton();
             this.rdbFormatFreeText = new System.Windows.Forms.RadioButton();
@@ -58,7 +60,8 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.lblStationIDHelp = new System.Windows.Forms.LinkLabel();
-            this.bSelectAll = new System.Windows.Forms.Button();
+            this.lblLatestVersion = new System.Windows.Forms.LinkLabel();
+            this.lblFeedback = new System.Windows.Forms.LinkLabel();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -67,26 +70,26 @@
             // 
             // bDownload
             // 
-            this.bDownload.Location = new System.Drawing.Point(6, 209);
+            this.bDownload.Location = new System.Drawing.Point(6, 193);
             this.bDownload.Name = "bDownload";
-            this.bDownload.Size = new System.Drawing.Size(159, 23);
+            this.bDownload.Size = new System.Drawing.Size(159, 21);
             this.bDownload.TabIndex = 0;
             this.bDownload.Text = "Download";
             this.bDownload.UseVisualStyleBackColor = true;
             // 
             // txtStationID
             // 
-            this.txtStationID.Location = new System.Drawing.Point(116, 19);
+            this.txtStationID.Location = new System.Drawing.Point(131, 18);
             this.txtStationID.Name = "txtStationID";
-            this.txtStationID.Size = new System.Drawing.Size(89, 20);
+            this.txtStationID.Size = new System.Drawing.Size(84, 21);
             this.txtStationID.TabIndex = 1;
             this.txtStationID.Text = "29886";
             // 
             // richTextBox1
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(12, 334);
+            this.richTextBox1.Location = new System.Drawing.Point(12, 308);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(690, 262);
+            this.richTextBox1.Size = new System.Drawing.Size(690, 242);
             this.richTextBox1.TabIndex = 2;
             this.richTextBox1.Text = "";
             // 
@@ -109,58 +112,58 @@
             "Snow on Grnd (cm)",
             "Dir of Max Gust (10s deg)",
             "Spd of Max Gust (km/h)"});
-            this.listFields.Location = new System.Drawing.Point(199, 19);
+            this.listFields.Location = new System.Drawing.Point(199, 18);
             this.listFields.Name = "listFields";
-            this.listFields.Size = new System.Drawing.Size(191, 184);
+            this.listFields.Size = new System.Drawing.Size(191, 164);
             this.listFields.TabIndex = 3;
             // 
             // txtPath
             // 
-            this.txtPath.Location = new System.Drawing.Point(22, 19);
+            this.txtPath.Location = new System.Drawing.Point(22, 18);
             this.txtPath.Name = "txtPath";
-            this.txtPath.Size = new System.Drawing.Size(251, 20);
+            this.txtPath.Size = new System.Drawing.Size(251, 21);
             this.txtPath.TabIndex = 5;
             // 
             // bBrowseOutput
             // 
-            this.bBrowseOutput.Location = new System.Drawing.Point(204, 45);
+            this.bBrowseOutput.Location = new System.Drawing.Point(179, 42);
             this.bBrowseOutput.Name = "bBrowseOutput";
-            this.bBrowseOutput.Size = new System.Drawing.Size(69, 23);
+            this.bBrowseOutput.Size = new System.Drawing.Size(94, 21);
             this.bBrowseOutput.TabIndex = 6;
-            this.bBrowseOutput.Text = "...";
+            this.bBrowseOutput.Text = "Change ...";
             this.bBrowseOutput.UseVisualStyleBackColor = true;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(19, 26);
+            this.label3.Location = new System.Drawing.Point(19, 24);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(54, 13);
+            this.label3.Size = new System.Drawing.Size(65, 12);
             this.label3.TabIndex = 4;
             this.label3.Text = "Start Year";
             // 
             // txtStartYear
             // 
-            this.txtStartYear.Location = new System.Drawing.Point(116, 23);
+            this.txtStartYear.Location = new System.Drawing.Point(116, 21);
             this.txtStartYear.Name = "txtStartYear";
-            this.txtStartYear.Size = new System.Drawing.Size(157, 20);
+            this.txtStartYear.Size = new System.Drawing.Size(157, 21);
             this.txtStartYear.TabIndex = 1;
             this.txtStartYear.Text = "2000";
             // 
             // txtEndYear
             // 
-            this.txtEndYear.Location = new System.Drawing.Point(116, 49);
+            this.txtEndYear.Location = new System.Drawing.Point(116, 45);
             this.txtEndYear.Name = "txtEndYear";
-            this.txtEndYear.Size = new System.Drawing.Size(157, 20);
+            this.txtEndYear.Size = new System.Drawing.Size(157, 21);
             this.txtEndYear.TabIndex = 1;
             this.txtEndYear.Text = "2010";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(19, 52);
+            this.label4.Location = new System.Drawing.Point(19, 48);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(51, 13);
+            this.label4.Size = new System.Drawing.Size(53, 12);
             this.label4.TabIndex = 4;
             this.label4.Text = "End Year";
             // 
@@ -173,18 +176,18 @@
             this.groupBox1.Controls.Add(this.rdbMultipleStation);
             this.groupBox1.Controls.Add(this.rdbOneStation);
             this.groupBox1.Controls.Add(this.txtStationID);
-            this.groupBox1.Location = new System.Drawing.Point(12, 12);
+            this.groupBox1.Location = new System.Drawing.Point(12, 11);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(288, 116);
+            this.groupBox1.Size = new System.Drawing.Size(288, 107);
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Stations";
             // 
             // bStationInfo
             // 
-            this.bStationInfo.Location = new System.Drawing.Point(212, 20);
+            this.bStationInfo.Location = new System.Drawing.Point(221, 18);
             this.bStationInfo.Name = "bStationInfo";
-            this.bStationInfo.Size = new System.Drawing.Size(70, 23);
+            this.bStationInfo.Size = new System.Drawing.Size(61, 21);
             this.bStationInfo.TabIndex = 9;
             this.bStationInfo.Text = "info";
             this.bStationInfo.UseVisualStyleBackColor = true;
@@ -194,7 +197,7 @@
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.Red;
-            this.label2.Location = new System.Drawing.Point(6, 92);
+            this.label2.Location = new System.Drawing.Point(6, 85);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(187, 13);
             this.label2.TabIndex = 8;
@@ -205,7 +208,7 @@
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.Color.Red;
-            this.label1.Location = new System.Drawing.Point(6, 73);
+            this.label1.Location = new System.Drawing.Point(6, 67);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(259, 13);
             this.label1.TabIndex = 7;
@@ -213,9 +216,9 @@
             // 
             // bBrowseStationCSV
             // 
-            this.bBrowseStationCSV.Location = new System.Drawing.Point(116, 45);
+            this.bBrowseStationCSV.Location = new System.Drawing.Point(131, 42);
             this.bBrowseStationCSV.Name = "bBrowseStationCSV";
-            this.bBrowseStationCSV.Size = new System.Drawing.Size(166, 23);
+            this.bBrowseStationCSV.Size = new System.Drawing.Size(151, 21);
             this.bBrowseStationCSV.TabIndex = 6;
             this.bBrowseStationCSV.Text = "Find Station CSV...";
             this.bBrowseStationCSV.UseVisualStyleBackColor = true;
@@ -223,9 +226,9 @@
             // rdbMultipleStation
             // 
             this.rdbMultipleStation.AutoSize = true;
-            this.rdbMultipleStation.Location = new System.Drawing.Point(6, 45);
+            this.rdbMultipleStation.Location = new System.Drawing.Point(6, 42);
             this.rdbMultipleStation.Name = "rdbMultipleStation";
-            this.rdbMultipleStation.Size = new System.Drawing.Size(97, 17);
+            this.rdbMultipleStation.Size = new System.Drawing.Size(119, 16);
             this.rdbMultipleStation.TabIndex = 5;
             this.rdbMultipleStation.TabStop = true;
             this.rdbMultipleStation.Text = "Multiple Station";
@@ -234,9 +237,9 @@
             // rdbOneStation
             // 
             this.rdbOneStation.AutoSize = true;
-            this.rdbOneStation.Location = new System.Drawing.Point(6, 22);
+            this.rdbOneStation.Location = new System.Drawing.Point(6, 20);
             this.rdbOneStation.Name = "rdbOneStation";
-            this.rdbOneStation.Size = new System.Drawing.Size(81, 17);
+            this.rdbOneStation.Size = new System.Drawing.Size(89, 16);
             this.rdbOneStation.TabIndex = 5;
             this.rdbOneStation.TabStop = true;
             this.rdbOneStation.Text = "One Station";
@@ -248,9 +251,9 @@
             this.groupBox2.Controls.Add(this.txtStartYear);
             this.groupBox2.Controls.Add(this.txtEndYear);
             this.groupBox2.Controls.Add(this.label4);
-            this.groupBox2.Location = new System.Drawing.Point(12, 134);
+            this.groupBox2.Location = new System.Drawing.Point(12, 124);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(288, 81);
+            this.groupBox2.Size = new System.Drawing.Size(288, 75);
             this.groupBox2.TabIndex = 9;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Time";
@@ -260,18 +263,18 @@
             this.groupBox3.Controls.Add(this.bOpen);
             this.groupBox3.Controls.Add(this.bBrowseOutput);
             this.groupBox3.Controls.Add(this.txtPath);
-            this.groupBox3.Location = new System.Drawing.Point(12, 221);
+            this.groupBox3.Location = new System.Drawing.Point(12, 204);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(288, 78);
+            this.groupBox3.Size = new System.Drawing.Size(288, 72);
             this.groupBox3.TabIndex = 10;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Output Folder";
             // 
             // bOpen
             // 
-            this.bOpen.Location = new System.Drawing.Point(22, 45);
+            this.bOpen.Location = new System.Drawing.Point(22, 42);
             this.bOpen.Name = "bOpen";
-            this.bOpen.Size = new System.Drawing.Size(92, 23);
+            this.bOpen.Size = new System.Drawing.Size(92, 21);
             this.bOpen.TabIndex = 4;
             this.bOpen.Text = "Open Folder";
             this.bOpen.UseVisualStyleBackColor = true;
@@ -286,19 +289,28 @@
             this.groupBox4.Controls.Add(this.rdbFormatArcSWATDbf);
             this.groupBox4.Controls.Add(this.bDownload);
             this.groupBox4.Controls.Add(this.listFields);
-            this.groupBox4.Location = new System.Drawing.Point(306, 22);
+            this.groupBox4.Location = new System.Drawing.Point(306, 20);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(396, 238);
+            this.groupBox4.Size = new System.Drawing.Size(396, 220);
             this.groupBox4.TabIndex = 11;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Format";
             // 
+            // bSelectAll
+            // 
+            this.bSelectAll.Location = new System.Drawing.Point(199, 193);
+            this.bSelectAll.Name = "bSelectAll";
+            this.bSelectAll.Size = new System.Drawing.Size(191, 21);
+            this.bSelectAll.TabIndex = 4;
+            this.bSelectAll.Text = "Select All";
+            this.bSelectAll.UseVisualStyleBackColor = true;
+            // 
             // rdbFormatSWATInput
             // 
             this.rdbFormatSWATInput.AutoSize = true;
-            this.rdbFormatSWATInput.Location = new System.Drawing.Point(7, 112);
+            this.rdbFormatSWATInput.Location = new System.Drawing.Point(7, 103);
             this.rdbFormatSWATInput.Name = "rdbFormatSWATInput";
-            this.rdbFormatSWATInput.Size = new System.Drawing.Size(140, 17);
+            this.rdbFormatSWATInput.Size = new System.Drawing.Size(161, 16);
             this.rdbFormatSWATInput.TabIndex = 0;
             this.rdbFormatSWATInput.TabStop = true;
             this.rdbFormatSWATInput.Text = "SWAT Input (.pcp, .tmp)";
@@ -307,9 +319,9 @@
             // rdbFormatFreeCSV
             // 
             this.rdbFormatFreeCSV.AutoSize = true;
-            this.rdbFormatFreeCSV.Location = new System.Drawing.Point(6, 89);
+            this.rdbFormatFreeCSV.Location = new System.Drawing.Point(6, 82);
             this.rdbFormatFreeCSV.Name = "rdbFormatFreeCSV";
-            this.rdbFormatFreeCSV.Size = new System.Drawing.Size(140, 17);
+            this.rdbFormatFreeCSV.Size = new System.Drawing.Size(167, 16);
             this.rdbFormatFreeCSV.TabIndex = 0;
             this.rdbFormatFreeCSV.TabStop = true;
             this.rdbFormatFreeCSV.Text = "Free Format CSV (.csv)  ";
@@ -318,9 +330,9 @@
             // rdbFormatFreeText
             // 
             this.rdbFormatFreeText.AutoSize = true;
-            this.rdbFormatFreeText.Location = new System.Drawing.Point(6, 66);
+            this.rdbFormatFreeText.Location = new System.Drawing.Point(6, 61);
             this.rdbFormatFreeText.Name = "rdbFormatFreeText";
-            this.rdbFormatFreeText.Size = new System.Drawing.Size(134, 17);
+            this.rdbFormatFreeText.Size = new System.Drawing.Size(173, 16);
             this.rdbFormatFreeText.TabIndex = 0;
             this.rdbFormatFreeText.TabStop = true;
             this.rdbFormatFreeText.Text = "Free Format Text (.txt)  ";
@@ -329,9 +341,9 @@
             // rdbFormatArcSWATTxt
             // 
             this.rdbFormatArcSWATTxt.AutoSize = true;
-            this.rdbFormatArcSWATTxt.Location = new System.Drawing.Point(7, 43);
+            this.rdbFormatArcSWATTxt.Location = new System.Drawing.Point(7, 40);
             this.rdbFormatArcSWATTxt.Name = "rdbFormatArcSWATTxt";
-            this.rdbFormatArcSWATTxt.Size = new System.Drawing.Size(158, 17);
+            this.rdbFormatArcSWATTxt.Size = new System.Drawing.Size(191, 16);
             this.rdbFormatArcSWATTxt.TabIndex = 0;
             this.rdbFormatArcSWATTxt.TabStop = true;
             this.rdbFormatArcSWATTxt.Text = "ArcSWAT Daily ASCII (.txt)  ";
@@ -340,9 +352,9 @@
             // rdbFormatArcSWATDbf
             // 
             this.rdbFormatArcSWATDbf.AutoSize = true;
-            this.rdbFormatArcSWATDbf.Location = new System.Drawing.Point(7, 20);
+            this.rdbFormatArcSWATDbf.Location = new System.Drawing.Point(7, 18);
             this.rdbFormatArcSWATDbf.Name = "rdbFormatArcSWATDbf";
-            this.rdbFormatArcSWATDbf.Size = new System.Drawing.Size(165, 17);
+            this.rdbFormatArcSWATDbf.Size = new System.Drawing.Size(191, 16);
             this.rdbFormatArcSWATDbf.TabIndex = 0;
             this.rdbFormatArcSWATDbf.TabStop = true;
             this.rdbFormatArcSWATDbf.Text = "ArcSWAT Daily dBase (.dbf)  ";
@@ -356,35 +368,48 @@
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(12, 305);
+            this.progressBar1.Location = new System.Drawing.Point(12, 282);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(690, 23);
+            this.progressBar1.Size = new System.Drawing.Size(690, 21);
             this.progressBar1.TabIndex = 12;
             // 
             // lblStationIDHelp
             // 
             this.lblStationIDHelp.AutoSize = true;
-            this.lblStationIDHelp.Location = new System.Drawing.Point(303, 286);
+            this.lblStationIDHelp.Location = new System.Drawing.Point(306, 264);
             this.lblStationIDHelp.Name = "lblStationIDHelp";
-            this.lblStationIDHelp.Size = new System.Drawing.Size(307, 13);
+            this.lblStationIDHelp.Size = new System.Drawing.Size(353, 12);
             this.lblStationIDHelp.TabIndex = 10;
             this.lblStationIDHelp.TabStop = true;
             this.lblStationIDHelp.Text = "How to Get Environment Canada Climate Station ID From Name";
             // 
-            // bSelectAll
+            // lblLatestVersion
             // 
-            this.bSelectAll.Location = new System.Drawing.Point(199, 209);
-            this.bSelectAll.Name = "bSelectAll";
-            this.bSelectAll.Size = new System.Drawing.Size(83, 23);
-            this.bSelectAll.TabIndex = 4;
-            this.bSelectAll.Text = "Select All";
-            this.bSelectAll.UseVisualStyleBackColor = true;
+            this.lblLatestVersion.AutoSize = true;
+            this.lblLatestVersion.Location = new System.Drawing.Point(306, 246);
+            this.lblLatestVersion.Name = "lblLatestVersion";
+            this.lblLatestVersion.Size = new System.Drawing.Size(167, 12);
+            this.lblLatestVersion.TabIndex = 13;
+            this.lblLatestVersion.TabStop = true;
+            this.lblLatestVersion.Text = "Get Lastest Porgram Package";
+            // 
+            // lblFeedback
+            // 
+            this.lblFeedback.AutoSize = true;
+            this.lblFeedback.Location = new System.Drawing.Point(503, 246);
+            this.lblFeedback.Name = "lblFeedback";
+            this.lblFeedback.Size = new System.Drawing.Size(83, 12);
+            this.lblFeedback.TabIndex = 14;
+            this.lblFeedback.TabStop = true;
+            this.lblFeedback.Text = "Send Feedback";
             // 
             // FrmDownloadEnvrionmentCanadaClimateData
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(714, 604);
+            this.ClientSize = new System.Drawing.Size(714, 558);
+            this.Controls.Add(this.lblFeedback);
+            this.Controls.Add(this.lblLatestVersion);
             this.Controls.Add(this.lblStationIDHelp);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.groupBox4);
@@ -393,6 +418,7 @@
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.richTextBox1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "FrmDownloadEnvrionmentCanadaClimateData";
@@ -445,5 +471,7 @@
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.LinkLabel lblStationIDHelp;
         private System.Windows.Forms.Button bSelectAll;
+        private System.Windows.Forms.LinkLabel lblLatestVersion;
+        private System.Windows.Forms.LinkLabel lblFeedback;
     }
 }
