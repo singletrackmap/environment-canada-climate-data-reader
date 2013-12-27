@@ -10,24 +10,27 @@ using HtmlAgilityPack;
 
 namespace HAWKLORRY
 {
-    /// <summary>
-    /// Environment Canada website
-    /// </summary>
-    class EC
+    class ECRequestUtil
     {
         private static string DOMAIN = "http://climate.weather.gc.ca";
 
         private static string[] SEARCH_TYPE = { "stnName", "stnProv" };
-
         private static string STATION_NAME_SEARCH_FORMAT = "txtStationName={0}&searchMethod=contains&";
         private static string SEARCH_FORMAT =
             DOMAIN +
             "/advanceSearch/searchHistoricDataStations_e.html?" +
             "searchType={0}&timeframe=1&{1}" +
             "optLimit=yearRange&StartYear=1840&EndYear={2}&Year={2}&Month={3}&Day={4}&" +
-            "selRowPerPage=10&cmdStnSubmit=Search";
+            "selRowPerPage={6}&cmdStnSubmit=Search&startRow={5}";
 
-        private string sendRequest(string requestURL)
+
+        /// <summary>
+        /// to request daily report for given station
+        /// </summary>
+        private static string DAILY_REPORT_FORMAT =
+            DOMAIN + "/climateData/dailydata_e.html?timeframe=2&StationID={0}";//to get latitude,Longitude and elevation
+
+        private static string sendRequest(string requestURL)
         {
             HttpWebRequest r = WebRequest.Create(requestURL) as HttpWebRequest;
             r.Method = "GET";
@@ -43,135 +46,45 @@ namespace HAWKLORRY
             }
         }
 
-        private void getOptions(string html)
-        {
-            HtmlDocument doc = new HtmlDocument();
-            doc.LoadHtml(html);
-            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//option");
-            foreach (HtmlNode node in nodes)
-            {
-                Debug.Write(node.Attributes[0].Value + ",");
-            }
+        public static string RequestAllStations(int numInOnePage, int startRow)
+        {        
+            return sendRequest
+                (string.Format(SEARCH_FORMAT,
+                "stnProv", "", DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day, startRow, numInOnePage));
         }
 
-        private void readOneStation(string formHtml)
+        /// <summary>
+        /// request daily report for given station
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public static string RequestLatLongElevation(string id)
         {
-            HtmlDocument doc = new HtmlDocument();
-            doc.LoadHtml(formHtml);
-            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//input[@type='hidden']");
-            //foreach (HtmlNode node in nodes)
-            //    Debug.WriteLine(node.OuterHtml);
-
-            nodes = doc.DocumentNode.SelectNodes("//div[@class='divTableRowOdd']");
-            foreach (HtmlNode node in nodes)
-            {
-                int num = 0;
-                foreach (HtmlNode child in node.ChildNodes)
-                {
-                    if (child.Name.ToLower() != "div") continue;
-
-                    num += 1;
-                    if (num <= 2)
-                        Debug.Write(child.InnerText.Trim() + ",");
-                    else
-                        getOptions(child.OuterHtml);
-
-                    if (num == 4)
-                    {
-                        Debug.WriteLine("");
-                        break;
-                    }
-                }
-            }
+            return sendRequest
+                (string.Format(DAILY_REPORT_FORMAT,id));
         }
 
-        private void testHtmlAgilityPack()
-        {
-            HtmlDocument doc = new HtmlDocument();
-            doc.Load(@"C:\Users\yuz\Downloads\testHtml.html");
-            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//form[@action='/climateData/Interform.php']");
-            //foreach (HtmlNode node in nodes)
-            //    Debug.WriteLine(node.OuterHtml);
-            
-            nodes = doc.DocumentNode.SelectNodes("//div[@class='divTableRowOdd']");
-            foreach (HtmlNode node in nodes)
-            {
-                int num = 0;
-                foreach (HtmlNode child in node.ChildNodes)
-                {
-                    if (child.Name.ToLower() != "div") continue;
 
-                    num += 1;
-                    if (num <= 2)
-                        Debug.Write(child.InnerText.Trim() + ",");
-                    else
-                        getOptions(child.OuterHtml);
+    }
 
-                    if (num == 4) 
-                    { 
-                        Debug.WriteLine(""); 
-                        break; 
-                    }
-                }               
-            }
-        }
-
+    /// <summary>
+    /// Environment Canada website
+    /// </summary>
+    class EC
+    {
         public void getAllInformation()
         {
-            testHtmlAgilityPack();
+            int num = 25;
+            int startRow = 1;
+            List<ECStationInfo> stations = new List<ECStationInfo>();
 
-            //string url = string.Format(SEARCH_FORMAT,
-            //    SEARCH_TYPE[1], "", DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
-            //string result = sendRequest(url);
-
-            //using (StreamWriter w = new StreamWriter(@"C:\Users\yuz\Downloads\testHtml.html"))
-            //    w.Write(result);
-
-            //using (StringReader reader = new StringReader(result))
-            //{
-            //    string line = reader.ReadLine();
-            //    while (line != null)
-            //    {
-            //        if (line.Contains("hidden"))
-            //        {
-            //            parseSearchResult(line);
-            //            Debug.WriteLine("---------------------------");                        
-            //        }
-            //        line = reader.ReadLine();
-            //    }
-            //}
-
-
-            //using (StreamReader reader = new StreamReader(@"C:\Users\HAWK\Downloads\testECResultXML.txt"))
-            //{
-            //    while (!reader.EndOfStream)
-            //    {
-            //        string line = reader.ReadLine();
-            //        if (!line.Contains("hidden")) continue;
-            //        parseSearchResult(line);
-            //        Debug.WriteLine("---------------------------");
-            //    }
-            //}
-        }
-
-        private void parseSearchResult(string searchResult)
-        {
-            int first = searchResult.IndexOf("<input type=\"hidden\" name=\"dlyRange\"");
-            int last = searchResult.LastIndexOf("<input type=\"hidden\"");
-            if (first == -1 || last == -1) return;
-            searchResult = searchResult.Substring(first,last-first);
-            searchResult = searchResult.Replace("\t", "");
-            searchResult = "<p>" + searchResult + "</p>";
-            XmlReader reader = XmlReader.Create(new StringReader(searchResult));
-            while (reader.ReadToFollowing("input"))
+            do
             {
-                reader.MoveToAttribute("name");
-                string name = reader.Value;
-                reader.MoveToAttribute("value");
-                string v = reader.Value;
-                Debug.WriteLine(name + "," + v);                
-            }
-            
+                string request = ECRequestUtil.RequestAllStations(num, startRow);
+                stations = ECStationInfo.FromEC(request);
+                startRow += num;
+
+            } while (stations.Count > 0);
         }
     }
 
@@ -221,10 +134,28 @@ namespace HAWKLORRY
                 _isAvailable = _firstDay.Length > 0 || _lastDay.Length > 0;
             }
         }
+
+        public bool IsAvailable { get { return _isValid && _isAvailable; } }
+        public string FirstDay { get { return _firstDay; } }
+        public string LastDay { get { return _lastDay; } }
+        public override string ToString()
+        {
+            if (!IsAvailable) return _intervalType + " data not available";
+            return string.Format("Type={2},FirstDay={0},LastDay={1}", _firstDay, _lastDay, _intervalType);
+        }
     }
 
+    /// <summary>
+    /// Util class to read html data retrieved from EC
+    /// </summary>
     class ECHtmlUtil
     {
+        /// <summary>
+        /// Read hidden input tag. The basic information of stations are in this format, especially the station id.
+        /// </summary>
+        /// <param name="inputHiddenNode"></param>
+        /// <param name="name"></param>
+        /// <param name="value"></param>
         public static void ReadInputHiddenNode(HtmlNode inputHiddenNode,
             out string name, out string value)
         {
@@ -236,6 +167,29 @@ namespace HAWKLORRY
                 value = inputHiddenNode.Attributes["value"].Value;
             }
         }
+
+        public static HtmlNodeCollection ReadAllNodes(string html, string xpath)
+        {
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(html);
+            return doc.DocumentNode.SelectNodes(xpath);
+        }
+
+        public static HtmlNodeCollection ReadAllNodes(HtmlNode node, string xpath)
+        {
+            return ReadAllNodes(node.InnerHtml, xpath);
+        }
+
+        public static double ReadLatitudeLongitude(HtmlNode node)
+        {
+            double degree = 0.0;
+            double.TryParse(node.ChildNodes[0].InnerText.Trim(), out degree);
+
+            double minute = 0.0;
+            double.TryParse(node.ChildNodes[2].InnerText.Trim(), out minute);
+
+            return degree + minute / 60.0;
+        }
     }
 
     class ECStationInfo
@@ -243,11 +197,108 @@ namespace HAWKLORRY
         private string _name;
         private string _province;
         private string _id;
+        private double _latitude = 0;
+        private double _longitude = 0;
+        private double _elevation = 0;
         private ECStationDataAvailability _hourlyAvailability = null;
         private ECStationDataAvailability _dailyAvailability = null;
         private ECStationDataAvailability _monthlyAvailability = null;
 
+        public static List<ECStationInfo> FromEC(string htmlRequest)
+        {
+            HtmlNodeCollection nodes = ECHtmlUtil.ReadAllNodes(htmlRequest, "//form[@action='/climateData/Interform.php']");
+            List<ECStationInfo> stations = new List<ECStationInfo>();
+            if (nodes == null || nodes.Count == 0) return stations;
+            foreach (HtmlNode node in nodes)
+            {
+                ECStationInfo info = new ECStationInfo(node);
+                Debug.WriteLine(info);
+                stations.Add(info);
+            }
+            return stations;
+        }
 
+        public ECStationInfo(HtmlNode stationFormNode)
+        {
+            //read basic information from hidden inputs
+            HtmlNodeCollection allHiddenInputNodes = 
+                ECHtmlUtil.ReadAllNodes(stationFormNode,"//input[@type='hidden']");
+            if (allHiddenInputNodes == null)
+            {
+                //try to find parent div of hidden inputs
+                while (stationFormNode != null && stationFormNode.Name != "div")
+                    stationFormNode = stationFormNode.NextSibling;
+                if (stationFormNode == null) return;
+                allHiddenInputNodes = ECHtmlUtil.ReadAllNodes(stationFormNode, "//input[@type='hidden']");                
+                if (allHiddenInputNodes == null) return;
+            }
+
+            _hourlyAvailability = new ECStationDataAvailability(allHiddenInputNodes[0]);
+            _dailyAvailability = new ECStationDataAvailability(allHiddenInputNodes[1]);
+            _monthlyAvailability = new ECStationDataAvailability(allHiddenInputNodes[2]);
+
+            string key = "";
+            ECHtmlUtil.ReadInputHiddenNode(allHiddenInputNodes[3],  //station id
+                out key, out _id);
+            ECHtmlUtil.ReadInputHiddenNode(allHiddenInputNodes[4],  //province
+                out key, out _province);
+
+            //read station name and available years from divs
+            HtmlNodeCollection allDataDivNodes =
+                ECHtmlUtil.ReadAllNodes(stationFormNode, "//div[@class='divTableRowOdd']");
+            if(allDataDivNodes == null)
+                allDataDivNodes =
+                ECHtmlUtil.ReadAllNodes(stationFormNode, "//div[@class='divTableRowEven']");
+            if (allDataDivNodes == null) return;
+
+            HtmlNode tableDataNode = allDataDivNodes[0];
+            allDataDivNodes = ECHtmlUtil.ReadAllNodes(tableDataNode, "//div[@class]");
+            if (allDataDivNodes == null) return;
+
+            _name = allDataDivNodes[0].InnerText.Trim(); //just read station name right now
+
+            //try to retrieve latitude, longitude and elevation
+            HtmlNodeCollection tdNodes = ECHtmlUtil.ReadAllNodes(ECRequestUtil.RequestLatLongElevation(_id), "//td"); 
+            if (tdNodes == null) return;
+
+            _latitude = ECHtmlUtil.ReadLatitudeLongitude(tdNodes[0]);
+            _longitude = ECHtmlUtil.ReadLatitudeLongitude(tdNodes[1]);
+
+            double.TryParse(tdNodes[2].ChildNodes[0].InnerText.Trim(), out _elevation);
+        }
+
+        /// <summary>
+        /// read data interval types or available years from select-option tage
+        /// </summary>
+        /// <param name="html"></param>
+        /// <remarks>may be used in the future</remarks>
+        private void getOptions(string html)
+        {
+            HtmlDocument doc = new HtmlDocument();
+            doc.LoadHtml(html);
+            HtmlNodeCollection nodes = doc.DocumentNode.SelectNodes("//option");
+            foreach (HtmlNode node in nodes)
+            {
+                Debug.Write(node.Attributes[0].Value + ",");
+            }
+        }
+
+        public string Name { get { return _name; } }
+        public string Province { get { return _province; } }
+        public string ID { get { return _id; } }
+        public bool IsHourlyAvailable { get { return _hourlyAvailability != null && _hourlyAvailability.IsAvailable; } }
+        public bool IsDailyAvailable { get { return _dailyAvailability != null && _dailyAvailability.IsAvailable; } }
+        public bool IsMonthlyAvailable { get { return _monthlyAvailability != null && _monthlyAvailability.IsAvailable; } }
+
+        public override string ToString()
+        {
+            return string.Format("Name={0},Province={1},ID={2},Latitude={6},Longitude={7},Elevation={8},{3},{4},{5}",
+                _name,_province,_id,
+                _hourlyAvailability == null ? "" : _hourlyAvailability.ToString(),
+                _dailyAvailability == null ? "" : _dailyAvailability.ToString(),
+                _monthlyAvailability == null ? "" : _monthlyAvailability.ToString(),
+                _latitude,_longitude,_elevation);
+        }
     }
 
 
