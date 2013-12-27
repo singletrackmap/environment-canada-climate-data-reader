@@ -198,37 +198,47 @@ namespace HAWKLORRY
         private bool _isValid = false;
 
         /// <summary>
-        /// 
+        /// Initialize with htmlNode corresponding to hidden input tag
         /// </summary>
         /// <param name="inputHiddenNode"></param>
         public ECStationDataAvailability(HtmlNode inputHiddenNode)
         {
-            for(int i=0;i<INTERVAL_NAME_IN_HTML.Length;i++)
-            {
-                string str = INTERVAL_NAME_IN_HTML[i];
-                if(inputHiddenNode.Attributes.Contains("name") &&
-                    inputHiddenNode.Attributes["name"].Value == str)
-                {
-                    _isValid = true;
-                    _intervalType = (ECDataIntervalType)(i+1);
+            string dataRangeType = "";
+            string dataRange = "";
+            ECHtmlUtil.ReadInputHiddenNode(inputHiddenNode,
+                out dataRangeType, out dataRange);
 
-                    string timeRange = inputHiddenNode.Attributes["value"].Value;
-                    if(timeRange != null)
-                    {
-                        string[] range = timeRange.Split('|');
-                        if(range.Length == 2)
-                        {
-                            _firstDay = range[0].Trim();
-                            _lastDay = range[1].Trim();
-                            _isAvailable = _firstDay.Length > 0 || _lastDay.Length > 0;
-                        }
-                    }
-                }
+            if (dataRangeType.Length == 0 || !INTERVAL_NAME_IN_HTML.Contains(dataRangeType)) return;
+
+            _isValid = true;
+            _intervalType = (ECDataIntervalType)(Array.IndexOf(INTERVAL_NAME_IN_HTML,dataRangeType) + 1);
+
+            string[] range = dataRange.Split('|');
+            if (range.Length == 2)
+            {
+                _firstDay = range[0].Trim();
+                _lastDay = range[1].Trim();
+                _isAvailable = _firstDay.Length > 0 || _lastDay.Length > 0;
             }
         }
     }
 
-    class StationInfo
+    class ECHtmlUtil
+    {
+        public static void ReadInputHiddenNode(HtmlNode inputHiddenNode,
+            out string name, out string value)
+        {
+            name = "";
+            value = "";
+            if (inputHiddenNode.Attributes.Contains("name") && inputHiddenNode.Attributes.Contains("value"))
+            {
+                name = inputHiddenNode.Attributes["name"].Value;
+                value = inputHiddenNode.Attributes["value"].Value;
+            }
+        }
+    }
+
+    class ECStationInfo
     {
         private string _name;
         private string _province;
@@ -236,6 +246,8 @@ namespace HAWKLORRY
         private ECStationDataAvailability _hourlyAvailability = null;
         private ECStationDataAvailability _dailyAvailability = null;
         private ECStationDataAvailability _monthlyAvailability = null;
+
+
     }
 
 
