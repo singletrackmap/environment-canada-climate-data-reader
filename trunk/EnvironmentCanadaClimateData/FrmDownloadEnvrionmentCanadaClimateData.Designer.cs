@@ -62,6 +62,7 @@
             this.lblStationIDHelp = new System.Windows.Forms.LinkLabel();
             this.lblLatestVersion = new System.Windows.Forms.LinkLabel();
             this.lblFeedback = new System.Windows.Forms.LinkLabel();
+            this.lblStationLocation = new System.Windows.Forms.LinkLabel();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -396,18 +397,29 @@
             // lblFeedback
             // 
             this.lblFeedback.AutoSize = true;
-            this.lblFeedback.Location = new System.Drawing.Point(503, 246);
+            this.lblFeedback.Location = new System.Drawing.Point(480, 246);
             this.lblFeedback.Name = "lblFeedback";
             this.lblFeedback.Size = new System.Drawing.Size(83, 12);
             this.lblFeedback.TabIndex = 14;
             this.lblFeedback.TabStop = true;
             this.lblFeedback.Text = "Send Feedback";
             // 
+            // lblStationLocation
+            // 
+            this.lblStationLocation.AutoSize = true;
+            this.lblStationLocation.Location = new System.Drawing.Point(571, 246);
+            this.lblStationLocation.Name = "lblStationLocation";
+            this.lblStationLocation.Size = new System.Drawing.Size(71, 12);
+            this.lblStationLocation.TabIndex = 15;
+            this.lblStationLocation.TabStop = true;
+            this.lblStationLocation.Text = "EC Stations";
+            // 
             // FrmDownloadEnvrionmentCanadaClimateData
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(714, 558);
+            this.Controls.Add(this.lblStationLocation);
             this.Controls.Add(this.lblFeedback);
             this.Controls.Add(this.lblLatestVersion);
             this.Controls.Add(this.lblStationIDHelp);
@@ -473,5 +485,6 @@
         private System.Windows.Forms.Button bSelectAll;
         private System.Windows.Forms.LinkLabel lblLatestVersion;
         private System.Windows.Forms.LinkLabel lblFeedback;
+        private System.Windows.Forms.LinkLabel lblStationLocation;
     }
 }
