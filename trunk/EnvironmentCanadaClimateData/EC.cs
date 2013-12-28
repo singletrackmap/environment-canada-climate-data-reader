@@ -7,6 +7,9 @@ using System.IO;
 using System.Xml;
 using System.Diagnostics;
 using HtmlAgilityPack;
+using LumenWorks.Framework.IO.Csv;
+using System.Data;
+using System.Data.OleDb;
 
 namespace HAWKLORRY
 {
@@ -71,21 +74,92 @@ namespace HAWKLORRY
     /// Environment Canada website
     /// </summary>
     class EC
-    {
+    {        
+        /// <summary>
+        /// Retrieve all stations from EC and save into a csv file
+        /// </summary>
+        /// <param name="csvFilePath"></param>
+        public static void RetrieveAndSaveAllStations(string csvFilePath)
+        {
+            using (StreamWriter writer = new StreamWriter(csvFilePath))
+            {
+                writer.WriteLine("ID,NAME,PROVINCE,LATITUDE,LONGITUDE,ELEVATION");
+
+                int num = 100;
+                int startRow = 1;
+                List<ECStationInfo> stations = new List<ECStationInfo>();
+
+                do
+                {
+                    string request = ECRequestUtil.RequestAllStations(num, startRow);
+                    stations = ECStationInfo.FromEC(request);
+
+                    foreach (ECStationInfo info in stations)
+                        writer.WriteLine(info.ToCSVString());
+
+                    startRow += num;
+                } while (stations.Count > 0); //just for test
+            }
+        }
+
+        private static string FILE_NAME_EC_STATIONS_CSV = "ecstations.csv";
+
+        private static string GetAllStationCSVFile()
+        {
+            string file = System.IO.Path.GetTempPath();
+            file += @"ECReader\";
+            if (!Directory.Exists(file)) Directory.CreateDirectory(file);
+            file += FILE_NAME_EC_STATIONS_CSV;
+
+            if (!System.IO.File.Exists(file))
+            {
+                using (StreamWriter writer = new StreamWriter(file))
+                    writer.Write(Properties.Resources.ecstations);
+            }
+            return file;
+        }
+
+        private static DataTable ReadCSV(string csvFile)
+        {
+            FileInfo info = new FileInfo(csvFile);
+            using (OleDbDataAdapter d = new OleDbDataAdapter(
+                "select * from " + info.Name,
+                "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" +
+                info.DirectoryName + ";Extended Properties='text;HDR=Yes;FMT=Delimited'"))
+            {
+                DataTable dt = new DataTable();
+                d.Fill(dt);
+                return dt;
+            }
+        }
+
+        public static DataTable ReadAllStations()
+        {
+            return ReadCSV(GetAllStationCSVFile());            
+        }
+
         public void getAllInformation()
         {
-            int num = 25;
-            int startRow = 1;
-            List<ECStationInfo> stations = new List<ECStationInfo>();
+            HtmlNodeCollection tdNodes = ECHtmlUtil.ReadAllNodes(ECRequestUtil.RequestLatLongElevation("49448"), "//td");
+            if (tdNodes == null) return;
 
-            do
-            {
-                string request = ECRequestUtil.RequestAllStations(num, startRow);
-                stations = ECStationInfo.FromEC(request);
-                startRow += num;
+            double latitude = ECHtmlUtil.ReadLatitudeLongitude(tdNodes[0]);
+            double longitude = -ECHtmlUtil.ReadLatitudeLongitude(tdNodes[1]);
 
-            } while (stations.Count > 0);
+            //double.TryParse(tdNodes[2].ChildNodes[0].InnerText.Trim(), out _elevation);
+
+           // RetrieveAndSaveAllStations(@"C:\Users\HAWK\Downloads\ecstations.csv");
+        //    DataTable dt = ReadAllStations();
+        //    Debug.WriteLine(dt.Rows.Count);
+
+        //    DataRow[] rows = dt.Select("NAME like '*100 MILE HOUSE*'");
+        //    foreach(DataRow r in rows)
+        //        Debug.WriteLine(string.Format("{0},{1}",r["ID"],r["NAME"]));
+
+              System.Windows.Forms.MessageBox.Show("finished.");
+
         }
+
     }
 
     enum ECSearchType
@@ -182,13 +256,22 @@ namespace HAWKLORRY
 
         public static double ReadLatitudeLongitude(HtmlNode node)
         {
+            if (node.ChildNodes.Count < 5)
+            {
+                Debug.WriteLine("Don't have latitude information.");
+                return 0.0;
+            }
+
             double degree = 0.0;
             double.TryParse(node.ChildNodes[0].InnerText.Trim(), out degree);
 
             double minute = 0.0;
             double.TryParse(node.ChildNodes[2].InnerText.Trim(), out minute);
 
-            return degree + minute / 60.0;
+            double second = 0.0;
+            double.TryParse(node.ChildNodes[4].InnerText.Trim(), out second);
+
+            return degree + (minute + second/60.0) / 60.0;
         }
     }
 
@@ -256,13 +339,16 @@ namespace HAWKLORRY
             if (allDataDivNodes == null) return;
 
             _name = allDataDivNodes[0].InnerText.Trim(); //just read station name right now
+            if (_name.Contains(',')) //some name has comma, like KEY LAKE, SK, just need first part, orelse it will conflict with csv format and would has problem when import in ArcMap
+                _name = _name.Split(',')[0].Trim();
+
 
             //try to retrieve latitude, longitude and elevation
             HtmlNodeCollection tdNodes = ECHtmlUtil.ReadAllNodes(ECRequestUtil.RequestLatLongElevation(_id), "//td"); 
             if (tdNodes == null) return;
 
             _latitude = ECHtmlUtil.ReadLatitudeLongitude(tdNodes[0]);
-            _longitude = ECHtmlUtil.ReadLatitudeLongitude(tdNodes[1]);
+            _longitude = -ECHtmlUtil.ReadLatitudeLongitude(tdNodes[1]);
 
             double.TryParse(tdNodes[2].ChildNodes[0].InnerText.Trim(), out _elevation);
         }
@@ -297,6 +383,13 @@ namespace HAWKLORRY
                 _hourlyAvailability == null ? "" : _hourlyAvailability.ToString(),
                 _dailyAvailability == null ? "" : _dailyAvailability.ToString(),
                 _monthlyAvailability == null ? "" : _monthlyAvailability.ToString(),
+                _latitude,_longitude,_elevation);
+        }
+
+        public string ToCSVString()
+        {
+            return string.Format("{0},{1},{2},{3},{4},{5}",
+                _id,_name,_province,
                 _latitude,_longitude,_elevation);
         }
     }
