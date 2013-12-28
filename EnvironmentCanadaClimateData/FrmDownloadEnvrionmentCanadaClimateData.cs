@@ -39,11 +39,6 @@ namespace HAWKLORRY
             rdbOneStation.CheckedChanged += (s, ee) => { updateStationSelectionControl(); };
             bStationInfo.Click += (s, ee) => 
             {
-                //test EC
-                EC ec = new EC();
-                ec.getAllInformation();
-                return;
-
                 //check station id
                 if (rdbOneStation.Checked && _id.Length == 0)
                 {
@@ -116,7 +111,8 @@ namespace HAWKLORRY
                     }
                 };
             lblStationIDHelp.LinkClicked += (s, ee) => { System.Diagnostics.Process.Start("http://wp.me/p2CzBq-5x"); };
-            lblLatestVersion.LinkClicked += (s, ee) => { System.Diagnostics.Process.Start("https://environment-canada-climate-data-reader.googlecode.com/svn/trunk/Doc/Environment_Canada_Climate_Data_Reader.zip"); };
+            lblLatestVersion.LinkClicked += (s, ee) => { System.Diagnostics.Process.Start("http://wp.me/s2CzBq-325"); };
+            this.lblStationLocation.LinkClicked += (s, ee) => { System.Diagnostics.Process.Start("http://wp.me/p2CzBq-68"); };
             lblFeedback.LinkClicked += (s, ee) => 
             {
                 try

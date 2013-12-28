@@ -159,6 +159,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\ecstations.csv" />
     <None Include="Resources\Icon1.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
