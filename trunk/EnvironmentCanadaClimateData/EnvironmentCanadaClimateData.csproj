@@ -71,6 +71,12 @@
     <Compile Include="FastDBF\DbfHeader.cs" />
     <Compile Include="FastDBF\DbfRecord.cs" />
     <Compile Include="FormatType.cs" />
+    <Compile Include="FrmDefineStations.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmDefineStations.Designer.cs">
+      <DependentUpon>FrmDefineStations.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmDownloadEnvrionmentCanadaClimateData.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -129,6 +135,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Station.cs" />
     <EmbeddedResource Include="csv\Resources\ExceptionMessage.resx" />
+    <EmbeddedResource Include="FrmDefineStations.resx">
+      <DependentUpon>FrmDefineStations.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FrmDownloadEnvrionmentCanadaClimateData.resx">
       <DependentUpon>FrmDownloadEnvrionmentCanadaClimateData.cs</DependentUpon>
     </EmbeddedResource>
