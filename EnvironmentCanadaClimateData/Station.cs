@@ -35,6 +35,17 @@ namespace HAWKLORRY
             _id = id;
         }
 
+        public Station(ECStationInfo info)
+        {
+            _id = info.ID;
+            _name = info.Name;
+            _province = info.Province;
+            _latitude = info.Latitude.ToString();
+            _longitude = info.Longitude.ToString();
+            _elevation = info.Elevation.ToString();
+            _hasTryToGetBasicInformation = true;
+        }
+
         public string ID { get { return _id; } }
         public string Name { get { return _name; } }
         public string Province { get { return _province; } }
