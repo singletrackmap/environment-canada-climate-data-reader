@@ -16,103 +16,54 @@ namespace HAWKLORRY
     public partial class FrmDownloadEnvrionmentCanadaClimateData : Form
     {
         private int[] _fields = null;
-        private string _id = "4922";
         private string _path = "";
         private int _startYear = 1882;
         private int _endYear = 1966;
         private static int[] FIELD_INDEX = { 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25 };
-        private bool _isMultiple = false;
 
-        private Station _station = null;            //for one station scenario
-        private List<Station> _multiple_stations = null;     //for multiple station scenario
+        private List<ECStationInfo> _stations = null;
+        private bool _isDownloadAllStations = false;
 
         public FrmDownloadEnvrionmentCanadaClimateData()
         {
             InitializeComponent();
 
-
             //time
             txtStartYear.TextChanged += (s, ee) => { int.TryParse(txtStartYear.Text, out _startYear); };
             txtEndYear.TextChanged += (s, ee) => { int.TryParse(txtEndYear.Text, out _endYear); };
 
-            //the station select method
-            rdbOneStation.CheckedChanged += (s, ee) => { updateStationSelectionControl(); };
-            bStationInfo.Click += (s, ee) => 
+            //stations
+            bDefineStations.Click += (s, ee) => 
             {
-                //check station id
-                if (rdbOneStation.Checked && _id.Length == 0)
+                FrmDefineStations frm = new FrmDefineStations();
+
+                //remove handler
+                if (_stations != null && _stations.Count > 0)
                 {
-                    showInformationWindow("Please intput station id");
-                    return;
+                    foreach (ECStationInfo info in _stations)
+                        info.ProgressChanged -= onStaionClimateDataDownloadingProgressChanged;
                 }
 
-                if (_station == null || _station.ID != _id)
+                //set to frm
+                frm.SelectedStations = _stations;
+
+                if (frm.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    _station = new Station(_id);
-                    _station.ProgressChanged += (ss, eee) => 
-                    {
-                        BaseWithProcess p = ss as BaseWithProcess;
-                        backgroundWorker1.ReportProgress(p.ProcessPercentage, p.ProcessMessage); 
-                    };
-                }
-                if (!_station.Exist)
-                    showInformationWindow("Couldn't find station " + _id);
-                else
-                {
-                    FrmStationInformation info = new FrmStationInformation();
-                    info.Station = _station;
-                    info.ShowDialog();
+                    _stations = frm.SelectedStations;
+
+                    //add handler
+                    foreach (ECStationInfo info in _stations)
+                        info.ProgressChanged += onStaionClimateDataDownloadingProgressChanged;
+                
+                    if(_stations.Count == 0)
+                        lblSelectedStations.Text = "No station is seleted.";
+                    else
+                        lblSelectedStations.Text = _stations.Count.ToString() + " stations are seleted.";
                 }
             };
-            rdbMultipleStation.CheckedChanged += (s, ee) => { updateStationSelectionControl(); };
-            txtStationID.TextChanged += (s, ee) => { _id = txtStationID.Text; };
-            bBrowseStationCSV.Click += (s, ee) => 
-                {
-                    if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                    {
-                        //read the station csv file
-                        using (StreamReader reader = new StreamReader(openFileDialog1.FileName))
-                        {
-                            using (CachedCsvReader csv = new CachedCsvReader(reader, true))
-                            {
-                                if (csv.FieldCount < 2)
-                                {
-                                    showInformationWindow("Less than two columns. Please check your file.");
-                                    return;
-                                }
 
-                                if(_multiple_stations == null)
-                                    _multiple_stations = new List<Station>();
-                                _multiple_stations.Clear();
-
-                                while (csv.ReadNextRecord())
-                                {
-                                    string id = csv[1];
-                                    if (id.Length > 0)
-                                    {
-                                        Station onestation = new Station(id);
-                                        _multiple_stations.Add(onestation);
-
-                                        onestation.ProgressChanged += (ss, eee) =>
-                                        {
-                                            BaseWithProcess p = ss as BaseWithProcess;
-                                            backgroundWorker1.ReportProgress(p.ProcessPercentage, p.ProcessMessage);
-                                        };
-                                    }
-                                        
-                                }
-
-                                if(_multiple_stations.Count == 0)
-                                    showInformationWindow("No station is found in " + openFileDialog1.FileName);
-                                else
-                                    showInformationWindow(_multiple_stations.Count.ToString() + " stations are found in " + openFileDialog1.FileName);
-                            }
-                        }                        
-                    }
-                };
-            lblStationIDHelp.LinkClicked += (s, ee) => { System.Diagnostics.Process.Start("http://wp.me/p2CzBq-5x"); };
             lblLatestVersion.LinkClicked += (s, ee) => { System.Diagnostics.Process.Start("http://wp.me/s2CzBq-325"); };
-            this.lblStationLocation.LinkClicked += (s, ee) => { System.Diagnostics.Process.Start("http://wp.me/p2CzBq-68"); };
+            lblStationLocation.LinkClicked += (s, ee) => { System.Diagnostics.Process.Start("http://wp.me/p2CzBq-68"); };
             lblFeedback.LinkClicked += (s, ee) => 
             {
                 try
@@ -125,9 +76,6 @@ namespace HAWKLORRY
                     showInformationWindow("My email address has been copyied to clipboard.");
                 }                
             };
- 
-            //bHelpStationID.Click += (s, ee) => { FrmHelp frm = new FrmHelp(); frm.ShowDialog(); };
-
             
             //the output format
             this.rdbFormatArcSWATDbf.CheckedChanged += (s, ee) => { updateFormatSelectionControl(); };
@@ -183,17 +131,10 @@ namespace HAWKLORRY
                         return;
                     }
 
-                    //check station id
-                    if (rdbOneStation.Checked && _id.Length == 0)
+                    //check stations
+                    if(_stations == null || _stations.Count == 0)
                     {
-                        showInformationWindow("Please intput station id");
-                        return;
-                    }
-
-                    //check multiple stations
-                    if(rdbMultipleStation.Checked && (_multiple_stations == null || _multiple_stations.Count == 0))
-                    {
-                        showInformationWindow("Please load stations first.");
+                        showInformationWindow("Please define stations first.");
                         return;
                     }
 
@@ -202,17 +143,6 @@ namespace HAWKLORRY
                     {
                         showInformationWindow("Please select output fields.");
                         return;
-                    }
-
-                    //intialize single station if necessary
-                    if (rdbOneStation.Checked && (_station == null || _station.ID != _id))
-                    {
-                        _station = new Station(_id);
-                        _station.ProgressChanged += (ss, eee) =>
-                        {
-                            BaseWithProcess p = ss as BaseWithProcess;
-                            backgroundWorker1.ReportProgress(p.ProcessPercentage, p.ProcessMessage);
-                        };
                     }
 
                     if (Format == FormatType.SWAT_TEXT)
@@ -255,77 +185,83 @@ namespace HAWKLORRY
                 {
                     backgroundWorker1.ReportProgress(0, "--------------------------------------------");
 
-                    if(!_isMultiple)        //one station 
+                    if (_isDownloadAllStations) //download all stations, update ecstations.csv
                     {
-                        string msg = "";
-                        try
-                        {                            
-                            bool status = _station.save(_fields, _startYear, _endYear, _path, Format);
-                            if (!status)
+                        backgroundWorker1.ReportProgress(0, "Downloading all EC stations.");
+                        EC.RetrieveAndSaveAllStations(
+                            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\ecstations.csv",
+                            backgroundWorker1);
+                        backgroundWorker1.ReportProgress(100, "Downloading all EC stations finished.");
+                    }
+                    else//download daily, hourly data
+                    {
+                        if (_stations.Count == 1)        //one station 
+                        {
+                            ECStationInfo station = _stations[0];
+                            string msg = "";
+                            try
                             {
-                                if (!_station.Exist)
-                                    msg = "Station " + _station.ID + " doesn't exist!";
-                                else
+                                bool status = station.save(_fields, _startYear, _endYear, _path, Format);
+                                if (!status)
                                     msg = "There is no data between "
                                         + _startYear.ToString() + " and " + _endYear.ToString() + ". Please check output messages.";
+                                else
+                                {
+                                    msg = station.WarningMessage;
+                                    if (msg.Length == 0)
+                                        msg = "Finished.";
+                                }
                             }
-                            else
+                            catch (System.Exception e)
                             {
-                                msg = _station.WarningMessage;
-                                if (msg.Length == 0)
-                                    msg = "Finished.";
+                                msg = e.Message;
                             }
-                        }
-                        catch (System.Exception e)
-                        {
-                            msg = e.Message;
-                        }
-                        backgroundWorker1.ReportProgress(_maxValueofProgressBar, msg);
-                        showInformationWindow(msg);
-                     }
-                    else                    //multiple stations
-	                {
-                        foreach(Station onestation in _multiple_stations)
-                        {                           
-                            onestation.save(_fields, _startYear, _endYear, _path, Format);
-                        }
-	                }
+                            backgroundWorker1.ReportProgress(_maxValueofProgressBar, msg);
+                            showInformationWindow(msg);
+                         }
+                        else                    //multiple stations
+	                    {
+                            //foreach(Station onestation in _stations)
+                            //{                           
+                            //    onestation.save(_fields, _startYear, _endYear, _path, Format);
+                            //}
+	                    }
+                    }
+
                 };
 
             //open the output folder
             bOpen.Click += (s, ee) => { if (System.IO.Directory.Exists(_path)) System.Diagnostics.Process.Start(_path); };
         }
 
+
+
+        private void onStaionClimateDataDownloadingProgressChanged(object sender, EventArgs e)
+        {
+            BaseWithProcess p = sender as BaseWithProcess;
+            backgroundWorker1.ReportProgress(p.ProcessPercentage, p.ProcessMessage);
+        }
+
         private int _maxValueofProgressBar = 100;
 
         private void FrmDownloadEnvrionmentCanadaClimateData_Load(object sender, EventArgs e)
         {
-            rdbOneStation.Checked = true;
             rdbFormatArcSWATDbf.Checked = true;
 
             updateFormatSelectionControl();
-            updateStationSelectionControl();
 
             _path = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             txtPath.Text = _path;
 
-            txtStationID.Text = _id;
             txtStartYear.Text = _startYear.ToString();
             txtEndYear.Text = _endYear.ToString();
+
+            lblSelectedStations.Text = "No station is seleted.";
 
             //_id = txtStationID.Text;
             //_startYear = Convert.ToInt32(txtStartYear.Text);
             //_endYear = Convert.ToInt32(txtEndYear.Text);
          }
-
-        private void updateStationSelectionControl()
-        {
-            txtStationID.Enabled = rdbOneStation.Checked;
-            bStationInfo.Enabled = rdbOneStation.Checked;
-            bBrowseStationCSV.Enabled = rdbMultipleStation.Checked;
-
-            _isMultiple = rdbMultipleStation.Checked;
-        }
 
         private void updateFormatSelectionControl()
         {
