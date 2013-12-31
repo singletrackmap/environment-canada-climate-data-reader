@@ -32,14 +32,23 @@
             this.tbByName = new System.Windows.Forms.TabPage();
             this.tbFromMap = new System.Windows.Forms.TabPage();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.listBox1 = new System.Windows.Forms.ListBox();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.lstSelectedStations = new System.Windows.Forms.ListBox();
             this.txtStationName = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.tbBrowse = new System.Windows.Forms.TabPage();
-            this.button1 = new System.Windows.Forms.Button();
-            this.listView1 = new System.Windows.Forms.ListView();
+            this.lsvResultByName = new System.Windows.Forms.ListView();
             this.bAddAll = new System.Windows.Forms.Button();
+            this.colName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.colProvince = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.bOK = new System.Windows.Forms.Button();
+            this.bCancel = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.bRemoveAllSelected = new System.Windows.Forms.Button();
+            this.lblHourlyDataAvailability = new System.Windows.Forms.Label();
+            this.lblDailyDataAvailability = new System.Windows.Forms.Label();
+            this.lblMonthlyDataAvailability = new System.Windows.Forms.Label();
+            this.lblStationName = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tbByName.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
@@ -48,7 +57,9 @@
             this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
             this.splitContainer2.Panel1.SuspendLayout();
+            this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -60,20 +71,19 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(511, 486);
+            this.tabControl1.Size = new System.Drawing.Size(496, 463);
             this.tabControl1.TabIndex = 0;
             // 
             // tbByName
             // 
             this.tbByName.Controls.Add(this.bAddAll);
-            this.tbByName.Controls.Add(this.listView1);
-            this.tbByName.Controls.Add(this.button1);
+            this.tbByName.Controls.Add(this.lsvResultByName);
             this.tbByName.Controls.Add(this.label1);
             this.tbByName.Controls.Add(this.txtStationName);
             this.tbByName.Location = new System.Drawing.Point(4, 22);
             this.tbByName.Name = "tbByName";
             this.tbByName.Padding = new System.Windows.Forms.Padding(3);
-            this.tbByName.Size = new System.Drawing.Size(503, 460);
+            this.tbByName.Size = new System.Drawing.Size(488, 437);
             this.tbByName.TabIndex = 0;
             this.tbByName.Text = "By Name";
             this.tbByName.UseVisualStyleBackColor = true;
@@ -83,7 +93,7 @@
             this.tbFromMap.Location = new System.Drawing.Point(4, 22);
             this.tbFromMap.Name = "tbFromMap";
             this.tbFromMap.Padding = new System.Windows.Forms.Padding(3);
-            this.tbFromMap.Size = new System.Drawing.Size(503, 460);
+            this.tbFromMap.Size = new System.Drawing.Size(511, 560);
             this.tbFromMap.TabIndex = 1;
             this.tbFromMap.Text = "From Map";
             this.tbFromMap.UseVisualStyleBackColor = true;
@@ -100,19 +110,84 @@
             // 
             // splitContainer1.Panel2
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.listBox1);
-            this.splitContainer1.Size = new System.Drawing.Size(656, 486);
-            this.splitContainer1.SplitterDistance = 511;
+            this.splitContainer1.Panel2.Controls.Add(this.groupBox1);
+            this.splitContainer1.Size = new System.Drawing.Size(772, 463);
+            this.splitContainer1.SplitterDistance = 496;
             this.splitContainer1.TabIndex = 1;
             // 
-            // listBox1
+            // lstSelectedStations
             // 
-            this.listBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(0, 0);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(141, 486);
-            this.listBox1.TabIndex = 0;
+            this.lstSelectedStations.Dock = System.Windows.Forms.DockStyle.Top;
+            this.lstSelectedStations.FormattingEnabled = true;
+            this.lstSelectedStations.Location = new System.Drawing.Point(3, 16);
+            this.lstSelectedStations.Name = "lstSelectedStations";
+            this.lstSelectedStations.Size = new System.Drawing.Size(266, 407);
+            this.lstSelectedStations.TabIndex = 0;
+            // 
+            // txtStationName
+            // 
+            this.txtStationName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtStationName.Location = new System.Drawing.Point(97, 11);
+            this.txtStationName.Name = "txtStationName";
+            this.txtStationName.Size = new System.Drawing.Size(371, 20);
+            this.txtStationName.TabIndex = 0;
+            this.txtStationName.TextChanged += new System.EventHandler(this.txtStationName_TextChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(20, 14);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(71, 13);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Station Name";
+            // 
+            // tbBrowse
+            // 
+            this.tbBrowse.Location = new System.Drawing.Point(4, 22);
+            this.tbBrowse.Name = "tbBrowse";
+            this.tbBrowse.Size = new System.Drawing.Size(511, 560);
+            this.tbBrowse.TabIndex = 2;
+            this.tbBrowse.Text = "Browse";
+            this.tbBrowse.UseVisualStyleBackColor = true;
+            // 
+            // lsvResultByName
+            // 
+            this.lsvResultByName.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.lsvResultByName.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.colName,
+            this.colProvince});
+            this.lsvResultByName.FullRowSelect = true;
+            this.lsvResultByName.Location = new System.Drawing.Point(23, 37);
+            this.lsvResultByName.MultiSelect = false;
+            this.lsvResultByName.Name = "lsvResultByName";
+            this.lsvResultByName.Size = new System.Drawing.Size(445, 365);
+            this.lsvResultByName.TabIndex = 3;
+            this.lsvResultByName.UseCompatibleStateImageBehavior = false;
+            this.lsvResultByName.View = System.Windows.Forms.View.Details;
+            // 
+            // bAddAll
+            // 
+            this.bAddAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.bAddAll.Location = new System.Drawing.Point(23, 408);
+            this.bAddAll.Name = "bAddAll";
+            this.bAddAll.Size = new System.Drawing.Size(131, 23);
+            this.bAddAll.TabIndex = 4;
+            this.bAddAll.Text = "Use All";
+            this.bAddAll.UseVisualStyleBackColor = true;
+            // 
+            // colName
+            // 
+            this.colName.Text = "Name";
+            this.colName.Width = 245;
+            // 
+            // colProvince
+            // 
+            this.colProvince.Text = "Province";
+            this.colProvince.Width = 75;
             // 
             // splitContainer2
             // 
@@ -124,69 +199,109 @@
             // splitContainer2.Panel1
             // 
             this.splitContainer2.Panel1.Controls.Add(this.splitContainer1);
-            this.splitContainer2.Size = new System.Drawing.Size(656, 572);
-            this.splitContainer2.SplitterDistance = 486;
+            // 
+            // splitContainer2.Panel2
+            // 
+            this.splitContainer2.Panel2.Controls.Add(this.lblStationName);
+            this.splitContainer2.Panel2.Controls.Add(this.lblMonthlyDataAvailability);
+            this.splitContainer2.Panel2.Controls.Add(this.lblDailyDataAvailability);
+            this.splitContainer2.Panel2.Controls.Add(this.lblHourlyDataAvailability);
+            this.splitContainer2.Panel2.Controls.Add(this.bCancel);
+            this.splitContainer2.Panel2.Controls.Add(this.bOK);
+            this.splitContainer2.Size = new System.Drawing.Size(772, 622);
+            this.splitContainer2.SplitterDistance = 463;
             this.splitContainer2.TabIndex = 2;
             // 
-            // txtStationName
+            // bOK
             // 
-            this.txtStationName.Location = new System.Drawing.Point(97, 13);
-            this.txtStationName.Name = "txtStationName";
-            this.txtStationName.Size = new System.Drawing.Size(303, 20);
-            this.txtStationName.TabIndex = 0;
+            this.bOK.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.bOK.Location = new System.Drawing.Point(27, 120);
+            this.bOK.Name = "bOK";
+            this.bOK.Size = new System.Drawing.Size(145, 23);
+            this.bOK.TabIndex = 0;
+            this.bOK.Text = "Use Selected Stations";
+            this.bOK.UseVisualStyleBackColor = true;
+            this.bOK.Click += new System.EventHandler(this.bOK_Click);
             // 
-            // label1
+            // bCancel
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(20, 16);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(71, 13);
-            this.label1.TabIndex = 1;
-            this.label1.Text = "Station Name";
+            this.bCancel.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.bCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.bCancel.Location = new System.Drawing.Point(685, 120);
+            this.bCancel.Name = "bCancel";
+            this.bCancel.Size = new System.Drawing.Size(75, 23);
+            this.bCancel.TabIndex = 1;
+            this.bCancel.Text = "Cancel";
+            this.bCancel.UseVisualStyleBackColor = true;
             // 
-            // tbBrowse
+            // groupBox1
             // 
-            this.tbBrowse.Location = new System.Drawing.Point(4, 22);
-            this.tbBrowse.Name = "tbBrowse";
-            this.tbBrowse.Size = new System.Drawing.Size(503, 460);
-            this.tbBrowse.TabIndex = 2;
-            this.tbBrowse.Text = "Browse";
-            this.tbBrowse.UseVisualStyleBackColor = true;
+            this.groupBox1.Controls.Add(this.bRemoveAllSelected);
+            this.groupBox1.Controls.Add(this.lstSelectedStations);
+            this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox1.Location = new System.Drawing.Point(0, 0);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(272, 463);
+            this.groupBox1.TabIndex = 1;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Selected Stations";
             // 
-            // button1
+            // bRemoveAllSelected
             // 
-            this.button1.Location = new System.Drawing.Point(406, 11);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "Search";
-            this.button1.UseVisualStyleBackColor = true;
+            this.bRemoveAllSelected.Location = new System.Drawing.Point(6, 430);
+            this.bRemoveAllSelected.Name = "bRemoveAllSelected";
+            this.bRemoveAllSelected.Size = new System.Drawing.Size(260, 23);
+            this.bRemoveAllSelected.TabIndex = 1;
+            this.bRemoveAllSelected.Text = "Remove All";
+            this.bRemoveAllSelected.UseVisualStyleBackColor = true;
             // 
-            // listView1
+            // lblHourlyDataAvailability
             // 
-            this.listView1.Location = new System.Drawing.Point(23, 47);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(458, 378);
-            this.listView1.TabIndex = 3;
-            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.lblHourlyDataAvailability.AutoSize = true;
+            this.lblHourlyDataAvailability.Location = new System.Drawing.Point(24, 43);
+            this.lblHourlyDataAvailability.Name = "lblHourlyDataAvailability";
+            this.lblHourlyDataAvailability.Size = new System.Drawing.Size(119, 13);
+            this.lblHourlyDataAvailability.TabIndex = 2;
+            this.lblHourlyDataAvailability.Text = "lblHourlyDataAvailability";
             // 
-            // bAddAll
+            // lblDailyDataAvailability
             // 
-            this.bAddAll.Location = new System.Drawing.Point(23, 431);
-            this.bAddAll.Name = "bAddAll";
-            this.bAddAll.Size = new System.Drawing.Size(75, 23);
-            this.bAddAll.TabIndex = 4;
-            this.bAddAll.Text = "Use All";
-            this.bAddAll.UseVisualStyleBackColor = true;
+            this.lblDailyDataAvailability.AutoSize = true;
+            this.lblDailyDataAvailability.Location = new System.Drawing.Point(24, 69);
+            this.lblDailyDataAvailability.Name = "lblDailyDataAvailability";
+            this.lblDailyDataAvailability.Size = new System.Drawing.Size(112, 13);
+            this.lblDailyDataAvailability.TabIndex = 2;
+            this.lblDailyDataAvailability.Text = "lblDailyDataAvailability";
+            // 
+            // lblMonthlyDataAvailability
+            // 
+            this.lblMonthlyDataAvailability.AutoSize = true;
+            this.lblMonthlyDataAvailability.Location = new System.Drawing.Point(24, 97);
+            this.lblMonthlyDataAvailability.Name = "lblMonthlyDataAvailability";
+            this.lblMonthlyDataAvailability.Size = new System.Drawing.Size(126, 13);
+            this.lblMonthlyDataAvailability.TabIndex = 2;
+            this.lblMonthlyDataAvailability.Text = "lblMonthlyDataAvailability";
+            // 
+            // lblStationName
+            // 
+            this.lblStationName.AutoSize = true;
+            this.lblStationName.Location = new System.Drawing.Point(24, 17);
+            this.lblStationName.Name = "lblStationName";
+            this.lblStationName.Size = new System.Drawing.Size(78, 13);
+            this.lblStationName.TabIndex = 3;
+            this.lblStationName.Text = "lblStationName";
             // 
             // FrmDefineStations
             // 
+            this.AcceptButton = this.bOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(656, 572);
+            this.CancelButton = this.bCancel;
+            this.ClientSize = new System.Drawing.Size(772, 622);
             this.Controls.Add(this.splitContainer2);
             this.Name = "FrmDefineStations";
             this.Text = "Define Stations";
+            this.Load += new System.EventHandler(this.FrmDefineStations_Load);
             this.tabControl1.ResumeLayout(false);
             this.tbByName.ResumeLayout(false);
             this.tbByName.PerformLayout();
@@ -195,8 +310,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
+            this.splitContainer2.Panel2.ResumeLayout(false);
+            this.splitContainer2.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
+            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -207,13 +325,22 @@
         private System.Windows.Forms.TabPage tbByName;
         private System.Windows.Forms.TabPage tbFromMap;
         private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.ListBox listBox1;
-        private System.Windows.Forms.SplitContainer splitContainer2;
+        private System.Windows.Forms.ListBox lstSelectedStations;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtStationName;
         private System.Windows.Forms.TabPage tbBrowse;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button bAddAll;
-        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.ListView lsvResultByName;
+        private System.Windows.Forms.ColumnHeader colName;
+        private System.Windows.Forms.ColumnHeader colProvince;
+        private System.Windows.Forms.SplitContainer splitContainer2;
+        private System.Windows.Forms.Button bCancel;
+        private System.Windows.Forms.Button bOK;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button bRemoveAllSelected;
+        private System.Windows.Forms.Label lblMonthlyDataAvailability;
+        private System.Windows.Forms.Label lblDailyDataAvailability;
+        private System.Windows.Forms.Label lblHourlyDataAvailability;
+        private System.Windows.Forms.Label lblStationName;
     }
 }
