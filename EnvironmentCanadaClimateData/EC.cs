@@ -212,6 +212,11 @@ namespace HAWKLORRY
             return ECStationInfo.FromCSVDataRows(ALL_STATIONS_TABLE.Select("NAME like '*"+name+"*'"));
         }
 
+        public static List<ECStationInfo> Search(string SQL)
+        {
+            return ECStationInfo.FromCSVDataRows(ALL_STATIONS_TABLE.Select(SQL));
+        }
+
     }
 
     enum ECSearchType

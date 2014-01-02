@@ -191,40 +191,35 @@ namespace HAWKLORRY
                         EC.RetrieveAndSaveAllStations(
                             Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\ecstations.csv",
                             backgroundWorker1);
-                        backgroundWorker1.ReportProgress(100, "Downloading all EC stations finished.");
+                        backgroundWorker1.ReportProgress(100,
+                            "Downloading all EC stations finished. Location: " + Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\ecstations.csv");
                     }
                     else//download daily, hourly data
                     {
+                        string msg = "";
                         if (_stations.Count == 1)        //one station 
                         {
-                            ECStationInfo station = _stations[0];
-                            string msg = "";
-                            try
-                            {
-                                bool status = station.save(_fields, _startYear, _endYear, _path, Format);
-                                if (!status)
-                                    msg = "There is no data between "
-                                        + _startYear.ToString() + " and " + _endYear.ToString() + ". Please check output messages.";
-                                else
-                                {
-                                    msg = station.WarningMessage;
-                                    if (msg.Length == 0)
-                                        msg = "Finished.";
-                                }
-                            }
-                            catch (System.Exception e)
-                            {
-                                msg = e.Message;
-                            }
+                            ECStationInfo station = _stations[0];                            
+                            downloadOneStation(station, out msg);
                             backgroundWorker1.ReportProgress(_maxValueofProgressBar, msg);
                             showInformationWindow(msg);
                          }
                         else                    //multiple stations
 	                    {
-                            //foreach(Station onestation in _stations)
-                            //{                           
-                            //    onestation.save(_fields, _startYear, _endYear, _path, Format);
-                            //}
+                            bool totalStatus = false;
+                            StringBuilder sb = new StringBuilder();
+                            sb.AppendLine("------------ Summary ------------");
+                            foreach (ECStationInfo onestation in _stations)
+                            {
+                                bool status = downloadOneStation(onestation, out msg);
+                                totalStatus |= status;
+
+                                if (msg.Length > 0)
+                                    sb.AppendLine(msg);
+                            }
+
+                            showInformationWindow("Finished." + (totalStatus ? "" : "Please check messages in the message window."));
+                            backgroundWorker1.ReportProgress(_maxValueofProgressBar, sb.ToString());                            
 	                    }
                     }
 
@@ -234,7 +229,29 @@ namespace HAWKLORRY
             bOpen.Click += (s, ee) => { if (System.IO.Directory.Exists(_path)) System.Diagnostics.Process.Start(_path); };
         }
 
-
+        private bool downloadOneStation(ECStationInfo station, out string message)
+        {
+            message = "";
+            try
+            {
+                bool status = station.save(_fields, _startYear, _endYear, _path, Format);
+                if (!status)
+                    message = station.Name + ": There is no data between "
+                        + _startYear.ToString() + " and " + _endYear.ToString() + ". Please check output messages.";
+                else
+                {
+                    message = station.WarningMessage;
+                    if (message.Length == 0)
+                        message = station.Name + ": Finished.";
+                }
+                return status;
+            }
+            catch (System.Exception e)
+            {
+                message = station.Name + ": " + e.Message;
+                return false;
+            }
+        }
 
         private void onStaionClimateDataDownloadingProgressChanged(object sender, EventArgs e)
         {

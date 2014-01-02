@@ -40,6 +40,8 @@
             this.txtEndYear = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.lblStationLocation = new System.Windows.Forms.LinkLabel();
+            this.lblSelectedStations = new System.Windows.Forms.Label();
             this.bDefineStations = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
@@ -55,8 +57,6 @@
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.lblLatestVersion = new System.Windows.Forms.LinkLabel();
             this.lblFeedback = new System.Windows.Forms.LinkLabel();
-            this.lblStationLocation = new System.Windows.Forms.LinkLabel();
-            this.lblSelectedStations = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -166,11 +166,30 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Stations";
             // 
+            // lblStationLocation
+            // 
+            this.lblStationLocation.AutoSize = true;
+            this.lblStationLocation.Location = new System.Drawing.Point(8, 80);
+            this.lblStationLocation.Name = "lblStationLocation";
+            this.lblStationLocation.Size = new System.Drawing.Size(191, 13);
+            this.lblStationLocation.TabIndex = 15;
+            this.lblStationLocation.TabStop = true;
+            this.lblStationLocation.Text = "Download EC Stations (Shapefile & kmz)";
+            // 
+            // lblSelectedStations
+            // 
+            this.lblSelectedStations.AutoSize = true;
+            this.lblSelectedStations.Location = new System.Drawing.Point(8, 53);
+            this.lblSelectedStations.Name = "lblSelectedStations";
+            this.lblSelectedStations.Size = new System.Drawing.Size(97, 13);
+            this.lblSelectedStations.TabIndex = 1;
+            this.lblSelectedStations.Text = "lblSelectedStations";
+            // 
             // bDefineStations
             // 
-            this.bDefineStations.Location = new System.Drawing.Point(7, 20);
+            this.bDefineStations.Location = new System.Drawing.Point(11, 20);
             this.bDefineStations.Name = "bDefineStations";
-            this.bDefineStations.Size = new System.Drawing.Size(148, 23);
+            this.bDefineStations.Size = new System.Drawing.Size(262, 23);
             this.bDefineStations.TabIndex = 0;
             this.bDefineStations.Text = "Define Stations ...";
             this.bDefineStations.UseVisualStyleBackColor = true;
@@ -322,25 +341,6 @@
             this.lblFeedback.TabIndex = 14;
             this.lblFeedback.TabStop = true;
             this.lblFeedback.Text = "Send Feedback";
-            // 
-            // lblStationLocation
-            // 
-            this.lblStationLocation.AutoSize = true;
-            this.lblStationLocation.Location = new System.Drawing.Point(8, 80);
-            this.lblStationLocation.Name = "lblStationLocation";
-            this.lblStationLocation.Size = new System.Drawing.Size(191, 13);
-            this.lblStationLocation.TabIndex = 15;
-            this.lblStationLocation.TabStop = true;
-            this.lblStationLocation.Text = "Download EC Stations (Shapefile & kmz)";
-            // 
-            // lblSelectedStations
-            // 
-            this.lblSelectedStations.AutoSize = true;
-            this.lblSelectedStations.Location = new System.Drawing.Point(6, 53);
-            this.lblSelectedStations.Name = "lblSelectedStations";
-            this.lblSelectedStations.Size = new System.Drawing.Size(97, 13);
-            this.lblSelectedStations.TabIndex = 1;
-            this.lblSelectedStations.Text = "lblSelectedStations";
             // 
             // FrmDownloadEnvrionmentCanadaClimateData
             // 
