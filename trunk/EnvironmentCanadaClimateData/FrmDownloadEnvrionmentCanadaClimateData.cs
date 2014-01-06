@@ -17,8 +17,8 @@ namespace HAWKLORRY
     {
         private int[] _fields = null;
         private string _path = "";
-        private int _startYear = 1882;
-        private int _endYear = 1966;
+        private int _startYear = 1965;
+        private int _endYear = 1965;
         private static int[] FIELD_INDEX = { 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25 };
 
         private List<ECStationInfo> _stations = null;
@@ -196,6 +196,7 @@ namespace HAWKLORRY
                     }
                     else//download daily, hourly data
                     {
+                        createGageLocationFile();
                         string msg = "";
                         if (_stations.Count == 1)        //one station 
                         {
@@ -203,7 +204,7 @@ namespace HAWKLORRY
                             downloadOneStation(station, out msg);
                             backgroundWorker1.ReportProgress(_maxValueofProgressBar, msg);
                             showInformationWindow(msg);
-                         }
+                        }
                         else                    //multiple stations
 	                    {
                             bool totalStatus = false;
@@ -221,12 +222,72 @@ namespace HAWKLORRY
                             showInformationWindow("Finished." + (totalStatus ? "" : "Please check messages in the message window."));
                             backgroundWorker1.ReportProgress(_maxValueofProgressBar, sb.ToString());                            
 	                    }
+                        
                     }
-
                 };
 
             //open the output folder
             bOpen.Click += (s, ee) => { if (System.IO.Directory.Exists(_path)) System.Diagnostics.Process.Start(_path); };
+        }
+
+        /// <summary>
+        /// create precipitation and temperature gage location file in txt or dbf file
+        /// </summary>
+        private void createGageLocationFile()
+        {
+            FormatType type = Format;
+            if (type != FormatType.ARCSWAT_DBF && type != FormatType.ARCSWAT_TEXT) return;
+            if (_stations == null || _stations.Count == 0) return;
+
+            //for ArcSWAT 2012 text format
+            if (type == FormatType.ARCSWAT_TEXT)
+            {
+                StringBuilder sb_p = new StringBuilder();
+                StringBuilder sb_t = new StringBuilder();
+                sb_p.AppendLine("ID,NAME,LAT,LONG,ELEVATION");
+                sb_t.AppendLine("ID,NAME,LAT,LONG,ELEVATION");
+                foreach (ECStationInfo info in _stations)
+                {
+                    sb_p.AppendLine(info.ToArcSWAT2012CSVGageLocation(true)); //precipitation
+                    sb_t.AppendLine(info.ToArcSWAT2012CSVGageLocation(false));//temperature
+                }
+                string pFileName = "pcp.txt";
+                string tFileName = "tmp.txt";
+                using (StreamWriter writer = new StreamWriter(_path + @"\" + pFileName))
+                    writer.Write(sb_p.ToString());
+                using (StreamWriter writer = new StreamWriter(_path + @"\" + tFileName))
+                    writer.Write(sb_t.ToString());
+            }
+            else if (type == FormatType.ARCSWAT_DBF)
+            {
+                string pFileName = "pcp.dbf";
+                string tFileName = "tmp.dbf";
+                DbfFile pDBF = createDBFGageLocationFile(_path + @"\" + pFileName);
+                DbfFile tDBF = createDBFGageLocationFile(_path + @"\" + tFileName);
+
+                DbfRecord pRec = new DbfRecord(pDBF.Header);
+                DbfRecord tRec = new DbfRecord(tDBF.Header);
+
+                foreach (ECStationInfo info in _stations)
+                {
+                    info.ToArcSWAT2012CSVGageLocation(pDBF, true);
+                    info.ToArcSWAT2012CSVGageLocation(tDBF, false);
+                }
+                pDBF.Close();
+                tDBF.Close();
+            }
+        }
+
+        private DbfFile createDBFGageLocationFile(string file)
+        {
+            DbfFile dbf = new DbfFile();
+            dbf.Open(file, FileMode.Create);
+            dbf.Header.AddColumn(new DbfColumn("ID", DbfColumn.DbfColumnType.Number, 8, 0)); //integer is a binary Integer type
+            dbf.Header.AddColumn(new DbfColumn("NAME", DbfColumn.DbfColumnType.Character,8,0));
+            dbf.Header.AddColumn(new DbfColumn("LAT", DbfColumn.DbfColumnType.Number,8,3));
+            dbf.Header.AddColumn(new DbfColumn("LONG", DbfColumn.DbfColumnType.Number,8,3));
+            dbf.Header.AddColumn(new DbfColumn("ELEVATION", DbfColumn.DbfColumnType.Number, 4, 0));//integer is a binary Integer type
+            return dbf;
         }
 
         private bool downloadOneStation(ECStationInfo station, out string message)
@@ -263,7 +324,7 @@ namespace HAWKLORRY
 
         private void FrmDownloadEnvrionmentCanadaClimateData_Load(object sender, EventArgs e)
         {
-            rdbFormatArcSWATDbf.Checked = true;
+            rdbFormatArcSWATTxt.Checked = true;
 
             updateFormatSelectionControl();
 
