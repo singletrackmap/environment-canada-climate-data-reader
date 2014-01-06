@@ -572,6 +572,29 @@ namespace HAWKLORRY
         }
 
         /// <summary>
+        /// Gage location format for ArcSWAT 2012
+        /// </summary>
+        /// <returns></returns>
+        public string ToArcSWAT2012CSVGageLocation(bool isPrecipitation)
+        {
+            return string.Format("{0},{1},{2},{3},{4}",
+                ID,
+                getFileName(1840,1840,FormatType.ARCSWAT_TEXT,isPrecipitation,false),
+                Latitude,Longitude,Convert.ToInt32(Elevation));
+        }
+
+        public void ToArcSWAT2012CSVGageLocation(DbfFile dbf, bool isPrecipitation)
+        {
+            DbfRecord rec = new DbfRecord(dbf.Header);
+            rec[0] = ID;
+            rec[1] = getFileName(1840, 1840, FormatType.ARCSWAT_DBF, isPrecipitation, false);
+            rec[2] = Latitude.ToString();
+            rec[3] = Longitude.ToString();
+            rec[4] = Convert.ToInt32(Elevation).ToString();
+            dbf.Write(rec, true);
+        }
+
+        /// <summary>
         /// Compare to other station
         /// </summary>
         /// <param name="obj"></param>
@@ -706,7 +729,11 @@ namespace HAWKLORRY
             int startYear, int endYear, string destinationFolder, FormatType format)
         {
             //shorten the time range if possible
-            if (DailyAvailability.IsAvailable)
+            //only apply for free foramt csv and txt format which is usually to do data analysis
+            //for SWAT/ArcSWAT format, this is checked in the calling function. For years without data, 
+            //program will just add -99 to it to make sure all input files have the same time range.
+            if ((format == FormatType.SIMPLE_CSV || format == FormatType.SIMPLE_TEXT)
+                && DailyAvailability.IsAvailable)
             {
                 if (startYear < DailyAvailability.FirstYear)
                 {
@@ -743,23 +770,31 @@ namespace HAWKLORRY
         /// <returns></returns>
         private string getExtentionFromType(FormatType type)
         {
-            if (type == FormatType.ARCSWAT_DBF) return "dbf";
-            else if (type == FormatType.SIMPLE_CSV) return "csv";
-            return "txt";
+            if (type == FormatType.ARCSWAT_DBF) return ".dbf";
+            else if (type == FormatType.SIMPLE_CSV) return ".csv";
+            return ".txt";
         }
 
-        private string getFileName(int startYear, int endYear)
+        public string getFileName(int startYear, int endYear, FormatType type, bool isPrecipitation, bool containExtension = true)
         {
-            return string.Format("{0}_{1}_{2}_{3}", _name.Replace(' ','_'),_province,startYear,endYear);
+            string extension = containExtension ? getExtentionFromType(type) : "";
+            if (type == FormatType.SIMPLE_CSV || type == FormatType.SIMPLE_TEXT)
+                return string.Format("{0}_{1}_{2}_{3}{4}",
+                    _name.Replace(' ', '_'), _province, startYear, endYear, extension);
+            else
+            {                
+                string affix = "T";
+                if (isPrecipitation) affix = "P";
+                return affix + ID.PadLeft(7, '0') + extension; //Limitation of file name in ArcSWAT: max 8 chars 
+            }                   
         }
 
         private bool save2Ascii(int[] fields,
             int startYear, int endYear, string destinationFolder, FormatType format)
         {
             //get the file name using station name
-            string fileName = string.Format("{0}\\{1}{2}.{3}",
-                Path.GetFullPath(destinationFolder), getFileName(startYear,endYear), 
-                getTimeAffix(), getExtentionFromType(format));  //precipitation
+            string fileName = string.Format("{0}\\{1}",
+                Path.GetFullPath(destinationFolder), getFileName(startYear,endYear,format,true));  //precipitation
 
             this.setProgress(0, string.Format("Processing station {0}", this));
             this.setProgress(0, fileName);
@@ -859,6 +894,12 @@ namespace HAWKLORRY
 
         #endregion
 
+        private bool hasDataAvailable(int year)
+        {
+            return
+                IsDailyAvailable && DailyAvailability.FirstYear <= year && DailyAvailability.LastYear >= year;
+        }
+
         /// <summary>
         /// Write data in given time range as ArcSWAT txt file
         /// </summary>
@@ -870,10 +911,12 @@ namespace HAWKLORRY
         {
             //get the file name using station name
             string timeAffix = getTimeAffix();
-            string pFile = string.Format("{0}\\P_{1}{2}.txt", 
-                Path.GetFullPath(destinationFolder), getFileName(startYear,endYear), timeAffix);  //precipitation
-            string tFile = string.Format("{0}\\T_{1}{2}.txt",
-                Path.GetFullPath(destinationFolder), getFileName(startYear, endYear), timeAffix);  //temperature
+            string pFile = string.Format("{0}\\{1}", 
+                Path.GetFullPath(destinationFolder), 
+                getFileName(startYear,endYear,FormatType.ARCSWAT_TEXT,true));  //precipitation
+            string tFile = string.Format("{0}\\{1}",
+                Path.GetFullPath(destinationFolder), 
+                getFileName(startYear, endYear,FormatType.ARCSWAT_TEXT,false));  //temperature
 
             this.setProgress(0, string.Format("Processing station {0}", this));
             this.setProgress(0, pFile);
@@ -889,6 +932,7 @@ namespace HAWKLORRY
             clearUncompletedYears();
             for (int i = startYear; i <= endYear; i++)
             {
+                //there is data, try to download
                 setProgress(processPercent, 
                     string.Format("Downloading data for station: {0}, year: {1}", this, i));
                 string resultsForOneYear =
@@ -917,7 +961,7 @@ namespace HAWKLORRY
                                 DateTime date = DateTime.Now;
                                 if (DateTime.TryParse(csv[0], out date))
                                 {
-                                    string startDate = string.Format("{0:yyyyMMdd}, Generated by Environment Canada Climate Data Reader", date);
+                                    string startDate = string.Format("{0:yyyyMMdd}, Generated by Environment Canada Climate Data Reader, hawklorry@gmail.com", date);
                                     pSb.AppendLine(startDate);
                                     tSb.AppendLine(startDate);
                                 }
@@ -958,10 +1002,12 @@ namespace HAWKLORRY
         private bool save2ArcSWATdbf(int startYear, int endYear, string destinationFolder)
         {
             string timeAffix = getTimeAffix();
-            string pFile = string.Format("{0}\\P_{1}{2}.dbf",
-                Path.GetFullPath(destinationFolder), getFileName(startYear, endYear), timeAffix);  //precipitation
-            string tFile = string.Format("{0}\\T_{1}{2}.dbf",
-                Path.GetFullPath(destinationFolder), getFileName(startYear, endYear), timeAffix);  //temperature
+            string pFile = string.Format("{0}\\{1}",
+                Path.GetFullPath(destinationFolder), 
+                getFileName(startYear, endYear,FormatType.ARCSWAT_DBF,true));  //precipitation
+            string tFile = string.Format("{0}\\{1}",
+                Path.GetFullPath(destinationFolder), 
+                getFileName(startYear, endYear, FormatType.ARCSWAT_DBF,false));  //temperature
 
             this.setProgress(0, string.Format("Processing station {0}", this));
             this.setProgress(0, pFile);
@@ -988,7 +1034,7 @@ namespace HAWKLORRY
             clearFailureYears();
             clearUncompletedYears();
             for (int i = startYear; i <= endYear; i++)
-            {
+            {                
                 setProgress(processPercent, 
                     string.Format("Downloading data for station: {0}, year: {1}", this, i));
                 string resultsForOneYear =
