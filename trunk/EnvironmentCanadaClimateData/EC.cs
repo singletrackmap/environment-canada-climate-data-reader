@@ -127,7 +127,71 @@ namespace HAWKLORRY
     /// Environment Canada website
     /// </summary>
     class EC
-    {        
+    {
+        private static string STATIONS_CSV_HEADER =
+            "ID,NAME,PROVINCE,LATITUDE,LONGITUDE,ELEVATION,HOURLY_FIRST_DAY,HOURLY_LAST_DAY,DAILY_FIRST_DAY,DAILY_LAST_DAY,MONTHLY_FIRST_DAY,MONTHLY_LAST_DAY";
+
+        /// <summary>
+        /// Save given stations to given file. Used to save user defined station list
+        /// </summary>
+        /// <param name="csvFilePath"></param>
+        /// <param name="stations"></param>
+        public static void SaveStations(string csvFilePath,
+            List<ECStationInfo> stations)
+        {
+            if (stations == null || stations.Count == 0) return;
+
+            using (StreamWriter writer = new StreamWriter(csvFilePath))
+            {
+                writer.WriteLine(STATIONS_CSV_HEADER);
+
+                foreach (ECStationInfo info in stations)
+                    writer.WriteLine(info.ToCSVString());
+            }
+        }
+
+        /// <summary>
+        /// Save given stations to temp folder. Used to automatically save the selected stations.
+        /// </summary>
+        /// <param name="stations"></param>
+        public static void SaveStations(List<ECStationInfo> stations)
+        {            
+            SaveStations(GetSavedSelectedStationCSVFile(), stations);
+        }
+
+        /// <summary>
+        /// get automatically saved stations
+        /// </summary>
+        public static List<ECStationInfo> SavedStations
+        {
+            get
+            {
+                return ReadStations(GetSavedSelectedStationCSVFile());
+            }
+        }
+
+        /// <summary>
+        /// read stations from given csv file
+        /// </summary>
+        /// <param name="csv"></param>
+        /// <returns></returns>
+        public static List<ECStationInfo> ReadStations(string csv)
+        {
+            List<ECStationInfo> stations = new List<ECStationInfo>();            
+            if (!System.IO.File.Exists(csv)) return stations;
+
+            try
+            {
+                DataTable dt = ReadCSV(csv);
+                stations = ECStationInfo.FromCSVDataRows(dt.Select());
+                return stations;
+            }
+            catch
+            {
+                return stations;
+            }
+        }
+
         /// <summary>
         /// Retrieve all stations from EC and save into a csv file
         /// </summary>
@@ -137,7 +201,7 @@ namespace HAWKLORRY
         {
             using (StreamWriter writer = new StreamWriter(csvFilePath))
             {
-                writer.WriteLine("ID,NAME,PROVINCE,LATITUDE,LONGITUDE,ELEVATION,HOURLY_FIRST_DAY,HOURLY_LAST_DAY,DAILY_FIRST_DAY,DAILY_LAST_DAY,MONTHLY_FIRST_DAY,MONTHLY_LAST_DAY");
+                writer.WriteLine(STATIONS_CSV_HEADER);
  
                 int num = 100;
                 int startRow = 1;
@@ -157,6 +221,7 @@ namespace HAWKLORRY
         }
 
         private static string FILE_NAME_EC_STATIONS_CSV = "ecstations_with_timeRange.csv";
+        private static string FILE_NAME_SELECTED_STATIONS_CSV = "ecstations_selected.csv";
 
         /// <summary>
         /// get default ecstations.csv in system temp folder. If doesn't exist, create using the resource file.
@@ -174,6 +239,16 @@ namespace HAWKLORRY
                 using (StreamWriter writer = new StreamWriter(file))
                     writer.Write(Properties.Resources.ecstations);
             }
+            return file;
+        }
+
+        private static string GetSavedSelectedStationCSVFile()
+        {
+            string file = System.IO.Path.GetTempPath();
+            file += @"ECReader\";
+            if (!Directory.Exists(file)) Directory.CreateDirectory(file);
+            file += FILE_NAME_SELECTED_STATIONS_CSV;
+
             return file;
         }
 
@@ -577,7 +652,7 @@ namespace HAWKLORRY
         /// <returns></returns>
         public string ToArcSWAT2012CSVGageLocation(bool isPrecipitation)
         {
-            return string.Format("{0},{1},{2},{3},{4}",
+            return string.Format("{0},{1},{2:F3},{3:F3},{4}",
                 ID,
                 getFileName(1840,1840,FormatType.ARCSWAT_TEXT,isPrecipitation,false),
                 Latitude,Longitude,Convert.ToInt32(Elevation));
@@ -588,8 +663,8 @@ namespace HAWKLORRY
             DbfRecord rec = new DbfRecord(dbf.Header);
             rec[0] = ID;
             rec[1] = getFileName(1840, 1840, FormatType.ARCSWAT_DBF, isPrecipitation, false);
-            rec[2] = Latitude.ToString();
-            rec[3] = Longitude.ToString();
+            rec[2] = Latitude.ToString("F3");
+            rec[3] = Longitude.ToString("F3");
             rec[4] = Convert.ToInt32(Elevation).ToString();
             dbf.Write(rec, true);
         }
@@ -779,10 +854,16 @@ namespace HAWKLORRY
         {
             string extension = containExtension ? getExtentionFromType(type) : "";
             if (type == FormatType.SIMPLE_CSV || type == FormatType.SIMPLE_TEXT)
-                return string.Format("{0}_{1}_{2}_{3}{4}",
-                    _name.Replace(' ', '_'), _province, startYear, endYear, extension);
+            {
+                if(endYear > startYear)
+                    return string.Format("{0}_{1}_{2}_{3}{4}",
+                        _name.Replace(' ', '_'), _province, startYear, endYear, extension);
+                else
+                    return string.Format("{0}_{1}_{2}{3}",
+                        _name.Replace(' ', '_'), _province, startYear, extension);
+            }
             else
-            {                
+            {
                 string affix = "T";
                 if (isPrecipitation) affix = "P";
                 return affix + ID.PadLeft(7, '0') + extension; //Limitation of file name in ArcSWAT: max 8 chars 
