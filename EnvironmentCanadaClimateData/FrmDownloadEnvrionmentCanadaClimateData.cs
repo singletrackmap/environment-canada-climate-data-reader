@@ -13,16 +13,38 @@ using SocialExplorer.IO.FastDBF;
 
 namespace HAWKLORRY
 {
-    public partial class FrmDownloadEnvrionmentCanadaClimateData : Form
+    partial class FrmDownloadEnvrionmentCanadaClimateData : Form
     {
         private int[] _fields = null;
         private string _path = "";
-        private int _startYear = 1965;
-        private int _endYear = 1965;
+        private int _startYear = 1840;
+        private int _endYear = 2013;
         private static int[] FIELD_INDEX = { 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25 };
 
         private List<ECStationInfo> _stations = null;
         private bool _isDownloadAllStations = false;
+
+        public List<ECStationInfo> SelectedStations
+        {
+            get
+            {
+                return _stations;
+            }
+            set
+            {
+                _stations = value;
+
+                //add handler
+                foreach (ECStationInfo info in _stations)
+                    info.ProgressChanged += onStaionClimateDataDownloadingProgressChanged;
+
+                if (_stations.Count == 0)
+                    lblSelectedStations.Text = "No station is seleted.";
+                else
+                    lblSelectedStations.Text = _stations.Count.ToString() + " stations are seleted.";
+
+            }
+        }
 
         public FrmDownloadEnvrionmentCanadaClimateData()
         {
@@ -49,18 +71,17 @@ namespace HAWKLORRY
 
                 if (frm.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    _stations = frm.SelectedStations;
-
-                    //add handler
-                    foreach (ECStationInfo info in _stations)
-                        info.ProgressChanged += onStaionClimateDataDownloadingProgressChanged;
-                
-                    if(_stations.Count == 0)
-                        lblSelectedStations.Text = "No station is seleted.";
-                    else
-                        lblSelectedStations.Text = _stations.Count.ToString() + " stations are seleted.";
+                    SelectedStations = frm.SelectedStations;
                 }
             };
+            bLoadSavedStations.Click += (s, ee) =>
+                {
+                    if (dlgLoadSaveStations.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    {
+                        SelectedStations = EC.ReadStations(dlgLoadSaveStations.FileName);
+                        MessageBox.Show(SelectedStations.Count.ToString() + " stations are loaded.","ECReader");
+                    }
+                };
 
             lblLatestVersion.LinkClicked += (s, ee) => { System.Diagnostics.Process.Start("http://wp.me/s2CzBq-325"); };
             lblStationLocation.LinkClicked += (s, ee) => { System.Diagnostics.Process.Start("http://wp.me/p2CzBq-68"); };
@@ -228,6 +249,11 @@ namespace HAWKLORRY
 
             //open the output folder
             bOpen.Click += (s, ee) => { if (System.IO.Directory.Exists(_path)) System.Diagnostics.Process.Start(_path); };
+
+            this.FormClosing += (s, ee) =>
+                {
+                    EC.SaveStations(SelectedStations);
+                };
         }
 
         /// <summary>
@@ -336,9 +362,8 @@ namespace HAWKLORRY
 
             lblSelectedStations.Text = "No station is seleted.";
 
-            //_id = txtStationID.Text;
-            //_startYear = Convert.ToInt32(txtStartYear.Text);
-            //_endYear = Convert.ToInt32(txtEndYear.Text);
+            //load automatically save stations
+            SelectedStations = EC.SavedStations;
          }
 
         private void updateFormatSelectionControl()

@@ -84,6 +84,22 @@ namespace HAWKLORRY
                     bAddAll.Text = "Use All" + (stations.Count > 0 ? " " + stations.Count.ToString() + " stations" : "");
 
                 };
+            bSaveSelectedStations.Click += (s, ee) =>
+                {
+                    dlgSaveSelectedStations.FileName = "ECReader_Stations_" + DateTime.Now.ToString("yyyyMMddHHmmss") + ".csv";
+                    if (dlgSaveSelectedStations.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    {
+                        try
+                        {
+                            EC.SaveStations(dlgSaveSelectedStations.FileName, SelectedStations);
+                            MessageBox.Show("Saved!","ECReader");
+                        }
+                        catch(System.Exception ex)
+                        {
+                            MessageBox.Show(ex.Message, "ECReader");
+                        }
+                    }
+                };
 
             updateDataAvailability(null);
 
