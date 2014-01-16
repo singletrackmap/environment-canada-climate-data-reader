@@ -103,7 +103,8 @@ namespace HAWKLORRY
 
             updateDataAvailability(null);
 
-            cmbDataType.SelectedIndex = 0;
+            if(cmbDataType.SelectedIndex == -1)
+                cmbDataType.SelectedIndex = 0;
             cmbProvince.SelectedIndex = 0;
             nudEndYear.Minimum = 1840;
             nudEndYear.Maximum = DateTime.Now.Year;
@@ -182,14 +183,13 @@ namespace HAWKLORRY
             
         }
 
-        /// <summary>
-        /// used to limit the number of stations
-        /// </summary>
-        private ECDataIntervalType _dataType = ECDataIntervalType.DAILY;
-
         public ECDataIntervalType DataType
         {
-            set { _dataType = value; }
+            set 
+            {
+                cmbDataType.SelectedIndex = Convert.ToInt32(value);
+                cmbDataType.Enabled = false;            
+            }
         }
 
         private void bOK_Click(object sender, EventArgs e)

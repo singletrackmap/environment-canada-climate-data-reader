@@ -84,7 +84,7 @@
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(496, 481);
+            this.tabControl1.Size = new System.Drawing.Size(496, 521);
             this.tabControl1.TabIndex = 0;
             // 
             // tbByName
@@ -105,44 +105,44 @@
             this.tbByName.Location = new System.Drawing.Point(4, 22);
             this.tbByName.Name = "tbByName";
             this.tbByName.Padding = new System.Windows.Forms.Padding(3);
-            this.tbByName.Size = new System.Drawing.Size(488, 455);
+            this.tbByName.Size = new System.Drawing.Size(488, 495);
             this.tbByName.TabIndex = 0;
             this.tbByName.Text = "By Name";
             this.tbByName.UseVisualStyleBackColor = true;
             // 
             // bSearch
             // 
-            this.bSearch.Location = new System.Drawing.Point(406, 37);
+            this.bSearch.Location = new System.Drawing.Point(406, 40);
             this.bSearch.Name = "bSearch";
-            this.bSearch.Size = new System.Drawing.Size(62, 21);
+            this.bSearch.Size = new System.Drawing.Size(62, 23);
             this.bSearch.TabIndex = 11;
             this.bSearch.Text = "Search";
             this.bSearch.UseVisualStyleBackColor = true;
             // 
             // nudEndYear
             // 
-            this.nudEndYear.Location = new System.Drawing.Point(336, 38);
+            this.nudEndYear.Location = new System.Drawing.Point(336, 41);
             this.nudEndYear.Maximum = new decimal(new int[] {
             2014,
             0,
             0,
             0});
             this.nudEndYear.Name = "nudEndYear";
-            this.nudEndYear.Size = new System.Drawing.Size(64, 21);
+            this.nudEndYear.Size = new System.Drawing.Size(64, 20);
             this.nudEndYear.TabIndex = 10;
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(312, 40);
+            this.label5.Location = new System.Drawing.Point(312, 43);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(17, 12);
+            this.label5.Size = new System.Drawing.Size(20, 13);
             this.label5.TabIndex = 9;
             this.label5.Text = "To";
             // 
             // nudStartYear
             // 
-            this.nudStartYear.Location = new System.Drawing.Point(240, 38);
+            this.nudStartYear.Location = new System.Drawing.Point(240, 41);
             this.nudStartYear.Maximum = new decimal(new int[] {
             1840,
             0,
@@ -154,7 +154,7 @@
             0,
             0});
             this.nudStartYear.Name = "nudStartYear";
-            this.nudStartYear.Size = new System.Drawing.Size(64, 21);
+            this.nudStartYear.Size = new System.Drawing.Size(64, 20);
             this.nudStartYear.TabIndex = 10;
             this.nudStartYear.Value = new decimal(new int[] {
             1840,
@@ -165,9 +165,9 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(206, 40);
+            this.label4.Location = new System.Drawing.Point(206, 43);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(29, 12);
+            this.label4.Size = new System.Drawing.Size(30, 13);
             this.label4.TabIndex = 9;
             this.label4.Text = "From";
             // 
@@ -179,17 +179,17 @@
             "Hourly",
             "Daily",
             "Monthly"});
-            this.cmbDataType.Location = new System.Drawing.Point(111, 37);
+            this.cmbDataType.Location = new System.Drawing.Point(111, 40);
             this.cmbDataType.Name = "cmbDataType";
-            this.cmbDataType.Size = new System.Drawing.Size(88, 20);
+            this.cmbDataType.Size = new System.Drawing.Size(88, 21);
             this.cmbDataType.TabIndex = 8;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(20, 40);
+            this.label3.Location = new System.Drawing.Point(20, 43);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(107, 12);
+            this.label3.Size = new System.Drawing.Size(82, 13);
             this.label3.TabIndex = 7;
             this.label3.Text = "Data Availability";
             // 
@@ -212,43 +212,43 @@
             "SASK",
             "SD",
             "YT"});
-            this.cmbProvince.Location = new System.Drawing.Point(343, 10);
+            this.cmbProvince.Location = new System.Drawing.Point(343, 11);
             this.cmbProvince.Name = "cmbProvince";
-            this.cmbProvince.Size = new System.Drawing.Size(125, 20);
+            this.cmbProvince.Size = new System.Drawing.Size(125, 21);
             this.cmbProvince.TabIndex = 6;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(288, 13);
+            this.label2.Location = new System.Drawing.Point(288, 14);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(53, 12);
+            this.label2.Size = new System.Drawing.Size(49, 13);
             this.label2.TabIndex = 5;
             this.label2.Text = "Province";
             // 
             // bAddAll
             // 
             this.bAddAll.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.bAddAll.Location = new System.Drawing.Point(23, 430);
+            this.bAddAll.Location = new System.Drawing.Point(23, 466);
             this.bAddAll.Name = "bAddAll";
-            this.bAddAll.Size = new System.Drawing.Size(131, 21);
+            this.bAddAll.Size = new System.Drawing.Size(131, 23);
             this.bAddAll.TabIndex = 4;
             this.bAddAll.Text = "Use All";
             this.bAddAll.UseVisualStyleBackColor = true;
             // 
             // lsvResultByName
             // 
-            this.lsvResultByName.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lsvResultByName.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.lsvResultByName.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.colName,
             this.colProvince});
             this.lsvResultByName.FullRowSelect = true;
-            this.lsvResultByName.Location = new System.Drawing.Point(23, 64);
+            this.lsvResultByName.Location = new System.Drawing.Point(23, 69);
             this.lsvResultByName.MultiSelect = false;
             this.lsvResultByName.Name = "lsvResultByName";
-            this.lsvResultByName.Size = new System.Drawing.Size(445, 361);
+            this.lsvResultByName.Size = new System.Drawing.Size(445, 391);
             this.lsvResultByName.TabIndex = 3;
             this.lsvResultByName.UseCompatibleStateImageBehavior = false;
             this.lsvResultByName.View = System.Windows.Forms.View.Details;
@@ -266,19 +266,19 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(20, 13);
+            this.label1.Location = new System.Drawing.Point(20, 14);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(77, 12);
+            this.label1.Size = new System.Drawing.Size(71, 13);
             this.label1.TabIndex = 1;
             this.label1.Text = "Station Name";
             // 
             // txtStationName
             // 
-            this.txtStationName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtStationName.Location = new System.Drawing.Point(97, 10);
+            this.txtStationName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtStationName.Location = new System.Drawing.Point(97, 11);
             this.txtStationName.Name = "txtStationName";
-            this.txtStationName.Size = new System.Drawing.Size(185, 21);
+            this.txtStationName.Size = new System.Drawing.Size(185, 20);
             this.txtStationName.TabIndex = 0;
             this.txtStationName.TextChanged += new System.EventHandler(this.txtStationName_TextChanged);
             // 
@@ -286,7 +286,7 @@
             // 
             this.tbBrowse.Location = new System.Drawing.Point(4, 22);
             this.tbBrowse.Name = "tbBrowse";
-            this.tbBrowse.Size = new System.Drawing.Size(488, 455);
+            this.tbBrowse.Size = new System.Drawing.Size(488, 495);
             this.tbBrowse.TabIndex = 2;
             this.tbBrowse.Text = "Browse";
             this.tbBrowse.UseVisualStyleBackColor = true;
@@ -296,7 +296,7 @@
             this.tbFromMap.Location = new System.Drawing.Point(4, 22);
             this.tbFromMap.Name = "tbFromMap";
             this.tbFromMap.Padding = new System.Windows.Forms.Padding(3);
-            this.tbFromMap.Size = new System.Drawing.Size(488, 455);
+            this.tbFromMap.Size = new System.Drawing.Size(488, 495);
             this.tbFromMap.TabIndex = 1;
             this.tbFromMap.Text = "From Map";
             this.tbFromMap.UseVisualStyleBackColor = true;
@@ -314,7 +314,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.groupBox1);
-            this.splitContainer1.Size = new System.Drawing.Size(772, 481);
+            this.splitContainer1.Size = new System.Drawing.Size(772, 521);
             this.splitContainer1.SplitterDistance = 496;
             this.splitContainer1.TabIndex = 1;
             // 
@@ -325,16 +325,16 @@
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox1.Location = new System.Drawing.Point(0, 0);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(272, 481);
+            this.groupBox1.Size = new System.Drawing.Size(272, 521);
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Selected Stations";
             // 
             // bRemoveAllSelected
             // 
-            this.bRemoveAllSelected.Location = new System.Drawing.Point(6, 455);
+            this.bRemoveAllSelected.Location = new System.Drawing.Point(6, 493);
             this.bRemoveAllSelected.Name = "bRemoveAllSelected";
-            this.bRemoveAllSelected.Size = new System.Drawing.Size(260, 21);
+            this.bRemoveAllSelected.Size = new System.Drawing.Size(260, 23);
             this.bRemoveAllSelected.TabIndex = 1;
             this.bRemoveAllSelected.Text = "Remove All";
             this.bRemoveAllSelected.UseVisualStyleBackColor = true;
@@ -343,10 +343,9 @@
             // 
             this.lstSelectedStations.Dock = System.Windows.Forms.DockStyle.Top;
             this.lstSelectedStations.FormattingEnabled = true;
-            this.lstSelectedStations.ItemHeight = 12;
-            this.lstSelectedStations.Location = new System.Drawing.Point(3, 17);
+            this.lstSelectedStations.Location = new System.Drawing.Point(3, 18);
             this.lstSelectedStations.Name = "lstSelectedStations";
-            this.lstSelectedStations.Size = new System.Drawing.Size(266, 436);
+            this.lstSelectedStations.Size = new System.Drawing.Size(266, 472);
             this.lstSelectedStations.TabIndex = 0;
             // 
             // splitContainer2
@@ -369,15 +368,15 @@
             this.splitContainer2.Panel2.Controls.Add(this.lblHourlyDataAvailability);
             this.splitContainer2.Panel2.Controls.Add(this.bCancel);
             this.splitContainer2.Panel2.Controls.Add(this.bOK);
-            this.splitContainer2.Size = new System.Drawing.Size(772, 574);
-            this.splitContainer2.SplitterDistance = 481;
+            this.splitContainer2.Size = new System.Drawing.Size(772, 622);
+            this.splitContainer2.SplitterDistance = 521;
             this.splitContainer2.TabIndex = 2;
             // 
             // bSaveSelectedStations
             // 
-            this.bSaveSelectedStations.Location = new System.Drawing.Point(178, 57);
+            this.bSaveSelectedStations.Location = new System.Drawing.Point(178, 62);
             this.bSaveSelectedStations.Name = "bSaveSelectedStations";
-            this.bSaveSelectedStations.Size = new System.Drawing.Size(108, 23);
+            this.bSaveSelectedStations.Size = new System.Drawing.Size(108, 25);
             this.bSaveSelectedStations.TabIndex = 4;
             this.bSaveSelectedStations.Text = "Save As...";
             this.bSaveSelectedStations.UseVisualStyleBackColor = true;
@@ -385,36 +384,36 @@
             // lblStationName
             // 
             this.lblStationName.AutoSize = true;
-            this.lblStationName.Location = new System.Drawing.Point(24, 16);
+            this.lblStationName.Location = new System.Drawing.Point(24, 17);
             this.lblStationName.Name = "lblStationName";
-            this.lblStationName.Size = new System.Drawing.Size(89, 12);
+            this.lblStationName.Size = new System.Drawing.Size(78, 13);
             this.lblStationName.TabIndex = 3;
             this.lblStationName.Text = "lblStationName";
             // 
             // lblMonthlyDataAvailability
             // 
             this.lblMonthlyDataAvailability.AutoSize = true;
-            this.lblMonthlyDataAvailability.Location = new System.Drawing.Point(316, 39);
+            this.lblMonthlyDataAvailability.Location = new System.Drawing.Point(316, 42);
             this.lblMonthlyDataAvailability.Name = "lblMonthlyDataAvailability";
-            this.lblMonthlyDataAvailability.Size = new System.Drawing.Size(161, 12);
+            this.lblMonthlyDataAvailability.Size = new System.Drawing.Size(126, 13);
             this.lblMonthlyDataAvailability.TabIndex = 2;
             this.lblMonthlyDataAvailability.Text = "lblMonthlyDataAvailability";
             // 
             // lblDailyDataAvailability
             // 
             this.lblDailyDataAvailability.AutoSize = true;
-            this.lblDailyDataAvailability.Location = new System.Drawing.Point(24, 39);
+            this.lblDailyDataAvailability.Location = new System.Drawing.Point(24, 42);
             this.lblDailyDataAvailability.Name = "lblDailyDataAvailability";
-            this.lblDailyDataAvailability.Size = new System.Drawing.Size(149, 12);
+            this.lblDailyDataAvailability.Size = new System.Drawing.Size(112, 13);
             this.lblDailyDataAvailability.TabIndex = 2;
             this.lblDailyDataAvailability.Text = "lblDailyDataAvailability";
             // 
             // lblHourlyDataAvailability
             // 
             this.lblHourlyDataAvailability.AutoSize = true;
-            this.lblHourlyDataAvailability.Location = new System.Drawing.Point(316, 16);
+            this.lblHourlyDataAvailability.Location = new System.Drawing.Point(316, 17);
             this.lblHourlyDataAvailability.Name = "lblHourlyDataAvailability";
-            this.lblHourlyDataAvailability.Size = new System.Drawing.Size(155, 12);
+            this.lblHourlyDataAvailability.Size = new System.Drawing.Size(119, 13);
             this.lblHourlyDataAvailability.TabIndex = 2;
             this.lblHourlyDataAvailability.Text = "lblHourlyDataAvailability";
             // 
@@ -422,9 +421,9 @@
             // 
             this.bCancel.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.bCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.bCancel.Location = new System.Drawing.Point(685, 56);
+            this.bCancel.Location = new System.Drawing.Point(685, 61);
             this.bCancel.Name = "bCancel";
-            this.bCancel.Size = new System.Drawing.Size(75, 21);
+            this.bCancel.Size = new System.Drawing.Size(75, 23);
             this.bCancel.TabIndex = 1;
             this.bCancel.Text = "Cancel";
             this.bCancel.UseVisualStyleBackColor = true;
@@ -432,9 +431,9 @@
             // bOK
             // 
             this.bOK.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.bOK.Location = new System.Drawing.Point(26, 57);
+            this.bOK.Location = new System.Drawing.Point(26, 62);
             this.bOK.Name = "bOK";
-            this.bOK.Size = new System.Drawing.Size(145, 21);
+            this.bOK.Size = new System.Drawing.Size(145, 23);
             this.bOK.TabIndex = 0;
             this.bOK.Text = "Use Selected Stations";
             this.bOK.UseVisualStyleBackColor = true;
@@ -448,10 +447,10 @@
             // FrmDefineStations
             // 
             this.AcceptButton = this.bOK;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.bCancel;
-            this.ClientSize = new System.Drawing.Size(772, 574);
+            this.ClientSize = new System.Drawing.Size(772, 622);
             this.Controls.Add(this.splitContainer2);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MaximizeBox = false;
