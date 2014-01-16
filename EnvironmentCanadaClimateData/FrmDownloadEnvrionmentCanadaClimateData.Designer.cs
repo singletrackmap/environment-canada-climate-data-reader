@@ -48,25 +48,32 @@
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.bOpen = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.bSelectAll = new System.Windows.Forms.Button();
             this.rdbFormatSWATInput = new System.Windows.Forms.RadioButton();
             this.rdbFormatFreeCSV = new System.Windows.Forms.RadioButton();
             this.rdbFormatFreeText = new System.Windows.Forms.RadioButton();
             this.rdbFormatArcSWATTxt = new System.Windows.Forms.RadioButton();
             this.rdbFormatArcSWATDbf = new System.Windows.Forms.RadioButton();
+            this.bSelectAll = new System.Windows.Forms.Button();
             this.dlgLoadSaveStations = new System.Windows.Forms.OpenFileDialog();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.lblLatestVersion = new System.Windows.Forms.LinkLabel();
             this.lblFeedback = new System.Windows.Forms.LinkLabel();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.rdbTimeIntervalMonthly = new System.Windows.Forms.RadioButton();
+            this.rdbTimeIntervalDaily = new System.Windows.Forms.RadioButton();
+            this.rdbTimeIntervalHourly = new System.Windows.Forms.RadioButton();
+            this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
+            this.groupBox5.SuspendLayout();
+            this.groupBox6.SuspendLayout();
             this.SuspendLayout();
             // 
             // bDownload
             // 
-            this.bDownload.Location = new System.Drawing.Point(6, 193);
+            this.bDownload.Location = new System.Drawing.Point(308, 221);
             this.bDownload.Name = "bDownload";
             this.bDownload.Size = new System.Drawing.Size(159, 21);
             this.bDownload.TabIndex = 0;
@@ -77,7 +84,7 @@
             // 
             this.richTextBox1.Location = new System.Drawing.Point(12, 308);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(690, 242);
+            this.richTextBox1.Size = new System.Drawing.Size(744, 242);
             this.richTextBox1.TabIndex = 2;
             this.richTextBox1.Text = "";
             // 
@@ -100,7 +107,7 @@
             "Snow on Grnd (cm)",
             "Dir of Max Gust (10s deg)",
             "Spd of Max Gust (km/h)"});
-            this.listFields.Location = new System.Drawing.Point(199, 18);
+            this.listFields.Location = new System.Drawing.Point(16, 20);
             this.listFields.Name = "listFields";
             this.listFields.Size = new System.Drawing.Size(191, 148);
             this.listFields.TabIndex = 3;
@@ -241,29 +248,17 @@
             // 
             // groupBox4
             // 
-            this.groupBox4.Controls.Add(this.bSelectAll);
             this.groupBox4.Controls.Add(this.rdbFormatSWATInput);
             this.groupBox4.Controls.Add(this.rdbFormatFreeCSV);
             this.groupBox4.Controls.Add(this.rdbFormatFreeText);
             this.groupBox4.Controls.Add(this.rdbFormatArcSWATTxt);
             this.groupBox4.Controls.Add(this.rdbFormatArcSWATDbf);
-            this.groupBox4.Controls.Add(this.bDownload);
-            this.groupBox4.Controls.Add(this.listFields);
-            this.groupBox4.Location = new System.Drawing.Point(306, 20);
+            this.groupBox4.Location = new System.Drawing.Point(308, 68);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(396, 220);
+            this.groupBox4.Size = new System.Drawing.Size(219, 131);
             this.groupBox4.TabIndex = 11;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Format";
-            // 
-            // bSelectAll
-            // 
-            this.bSelectAll.Location = new System.Drawing.Point(199, 193);
-            this.bSelectAll.Name = "bSelectAll";
-            this.bSelectAll.Size = new System.Drawing.Size(191, 21);
-            this.bSelectAll.TabIndex = 4;
-            this.bSelectAll.Text = "Select All";
-            this.bSelectAll.UseVisualStyleBackColor = true;
             // 
             // rdbFormatSWATInput
             // 
@@ -320,6 +315,15 @@
             this.rdbFormatArcSWATDbf.Text = "ArcSWAT 2009 dBase (.dbf)  ";
             this.rdbFormatArcSWATDbf.UseVisualStyleBackColor = true;
             // 
+            // bSelectAll
+            // 
+            this.bSelectAll.Location = new System.Drawing.Point(16, 174);
+            this.bSelectAll.Name = "bSelectAll";
+            this.bSelectAll.Size = new System.Drawing.Size(191, 21);
+            this.bSelectAll.TabIndex = 4;
+            this.bSelectAll.Text = "Select All";
+            this.bSelectAll.UseVisualStyleBackColor = true;
+            // 
             // dlgLoadSaveStations
             // 
             this.dlgLoadSaveStations.DefaultExt = "csv";
@@ -329,7 +333,7 @@
             // 
             this.progressBar1.Location = new System.Drawing.Point(12, 282);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(690, 21);
+            this.progressBar1.Size = new System.Drawing.Size(744, 21);
             this.progressBar1.TabIndex = 12;
             // 
             // lblLatestVersion
@@ -352,14 +356,73 @@
             this.lblFeedback.TabStop = true;
             this.lblFeedback.Text = "Send Feedback";
             // 
+            // groupBox5
+            // 
+            this.groupBox5.Controls.Add(this.rdbTimeIntervalMonthly);
+            this.groupBox5.Controls.Add(this.rdbTimeIntervalDaily);
+            this.groupBox5.Controls.Add(this.rdbTimeIntervalHourly);
+            this.groupBox5.Location = new System.Drawing.Point(308, 14);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(219, 48);
+            this.groupBox5.TabIndex = 5;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Time Interval";
+            // 
+            // rdbTimeIntervalMonthly
+            // 
+            this.rdbTimeIntervalMonthly.AutoSize = true;
+            this.rdbTimeIntervalMonthly.Location = new System.Drawing.Point(148, 21);
+            this.rdbTimeIntervalMonthly.Name = "rdbTimeIntervalMonthly";
+            this.rdbTimeIntervalMonthly.Size = new System.Drawing.Size(65, 16);
+            this.rdbTimeIntervalMonthly.TabIndex = 0;
+            this.rdbTimeIntervalMonthly.TabStop = true;
+            this.rdbTimeIntervalMonthly.Text = "Monthly";
+            this.rdbTimeIntervalMonthly.UseVisualStyleBackColor = true;
+            // 
+            // rdbTimeIntervalDaily
+            // 
+            this.rdbTimeIntervalDaily.AutoSize = true;
+            this.rdbTimeIntervalDaily.Location = new System.Drawing.Point(73, 20);
+            this.rdbTimeIntervalDaily.Name = "rdbTimeIntervalDaily";
+            this.rdbTimeIntervalDaily.Size = new System.Drawing.Size(53, 16);
+            this.rdbTimeIntervalDaily.TabIndex = 0;
+            this.rdbTimeIntervalDaily.TabStop = true;
+            this.rdbTimeIntervalDaily.Text = "Daily";
+            this.rdbTimeIntervalDaily.UseVisualStyleBackColor = true;
+            // 
+            // rdbTimeIntervalHourly
+            // 
+            this.rdbTimeIntervalHourly.AutoSize = true;
+            this.rdbTimeIntervalHourly.Location = new System.Drawing.Point(7, 21);
+            this.rdbTimeIntervalHourly.Name = "rdbTimeIntervalHourly";
+            this.rdbTimeIntervalHourly.Size = new System.Drawing.Size(59, 16);
+            this.rdbTimeIntervalHourly.TabIndex = 0;
+            this.rdbTimeIntervalHourly.TabStop = true;
+            this.rdbTimeIntervalHourly.Text = "Hourly";
+            this.rdbTimeIntervalHourly.UseVisualStyleBackColor = true;
+            // 
+            // groupBox6
+            // 
+            this.groupBox6.Controls.Add(this.listFields);
+            this.groupBox6.Controls.Add(this.bSelectAll);
+            this.groupBox6.Location = new System.Drawing.Point(533, 14);
+            this.groupBox6.Name = "groupBox6";
+            this.groupBox6.Size = new System.Drawing.Size(223, 206);
+            this.groupBox6.TabIndex = 15;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Column";
+            // 
             // FrmDownloadEnvrionmentCanadaClimateData
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(714, 558);
+            this.ClientSize = new System.Drawing.Size(770, 558);
+            this.Controls.Add(this.groupBox6);
+            this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.lblFeedback);
             this.Controls.Add(this.lblLatestVersion);
             this.Controls.Add(this.progressBar1);
+            this.Controls.Add(this.bDownload);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
@@ -371,7 +434,7 @@
             this.MinimizeBox = false;
             this.Name = "FrmDownloadEnvrionmentCanadaClimateData";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
-            this.Text = "Download Envrionment Canada Climate Data - Daily";
+            this.Text = "Environment Canada Climate Data Reader";
             this.Load += new System.EventHandler(this.FrmDownloadEnvrionmentCanadaClimateData_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -381,6 +444,9 @@
             this.groupBox3.PerformLayout();
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
+            this.groupBox6.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -417,5 +483,10 @@
         private System.Windows.Forms.Button bDefineStations;
         private System.Windows.Forms.Label lblSelectedStations;
         private System.Windows.Forms.Button bLoadSavedStations;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.GroupBox groupBox6;
+        private System.Windows.Forms.RadioButton rdbTimeIntervalMonthly;
+        private System.Windows.Forms.RadioButton rdbTimeIntervalDaily;
+        private System.Windows.Forms.RadioButton rdbTimeIntervalHourly;
     }
 }
