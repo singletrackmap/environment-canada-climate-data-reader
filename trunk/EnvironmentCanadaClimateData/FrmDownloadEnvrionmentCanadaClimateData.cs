@@ -35,6 +35,16 @@ namespace HAWKLORRY
             "Wind Spd (km/h)", "Visibility (km)", "Stn Press (kPa)", "Hmdx", "Wind Chill"
         };
 
+        private int[] DataFieldIndex
+        {
+            get
+            {
+                if (TimeInterval == ECDataIntervalType.DAILY) return DATA_FIELD_INDEX_DAILY;
+                if (TimeInterval == ECDataIntervalType.HOURLY) return DATA_FIELD_INDEX_HOURLY;
+                return new int[] { };
+            }
+        }
+
         public List<ECStationInfo> SelectedStations
         {
             get
@@ -79,6 +89,7 @@ namespace HAWKLORRY
 
                 //set to frm
                 frm.SelectedStations = _stations;
+                frm.DataType = TimeInterval;
 
                 if (frm.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
@@ -129,9 +140,9 @@ namespace HAWKLORRY
                     foreach(int index in listFields.CheckedIndices)
                     {
                         if (index != ee.Index) 
-                            f.Add(DATA_FIELD_INDEX_DAILY[index]);
+                            f.Add(DataFieldIndex[index]);
                     }
-                    if (ee.NewValue == CheckState.Checked) f.Add(DATA_FIELD_INDEX_DAILY[ee.Index]);
+                    if (ee.NewValue == CheckState.Checked) f.Add(DataFieldIndex[ee.Index]);
 
                     _fields = null;
 
@@ -425,16 +436,18 @@ namespace HAWKLORRY
 
             if (!rdbFormatFreeCSV.Checked && !rdbFormatFreeText.Checked)
                 rdbFormatFreeCSV.Checked = true;
+
+            _fields = null;
         }
 
-        private TimeIntervalType TimeInterval
+        private ECDataIntervalType TimeInterval
         {
             get
             {
-                if (rdbTimeIntervalDaily.Checked) return TimeIntervalType.DAILY;
-                if (rdbTimeIntervalHourly.Checked) return TimeIntervalType.HOURLY;
-                if (rdbTimeIntervalMonthly.Checked) return TimeIntervalType.MONTHLY;
-                return TimeIntervalType.DAILY;
+                if (rdbTimeIntervalDaily.Checked) return ECDataIntervalType.DAILY;
+                if (rdbTimeIntervalHourly.Checked) return ECDataIntervalType.HOURLY;
+                if (rdbTimeIntervalMonthly.Checked) return ECDataIntervalType.MONTHLY;
+                return ECDataIntervalType.DAILY;
             }
         }
 

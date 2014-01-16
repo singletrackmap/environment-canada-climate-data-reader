@@ -95,7 +95,7 @@ namespace HAWKLORRY
         /// </summary>
         /// <param name="year"></param>
         /// <returns></returns>
-        private static string RequestClimateData(string stationID, int year, int month, TimeIntervalType interval, bool keepHeader = true)
+        private static string RequestClimateData(string stationID, int year, int month, ECDataIntervalType interval, bool keepHeader = true)
         {
             string csv = sendRequest(
                 string.Format(DATA_REQUEST_URL_FORMAT, stationID, year, month, Convert.ToInt32(interval)));
@@ -105,7 +105,7 @@ namespace HAWKLORRY
             {
                 int lineNum = 0;
                 int headLine = HEADER_LINE_DAILY;
-                if (interval == TimeIntervalType.HOURLY)
+                if (interval == ECDataIntervalType.HOURLY)
                     headLine = HEADER_LINE_HOURLY;
                 if (!keepHeader) headLine += 1;
                 while (reader.Peek() >= 0)
@@ -132,7 +132,19 @@ namespace HAWKLORRY
         /// <returns></returns>
         public static string RequestHourlyClimateData(string stationID, int year, int month, bool keepHeader = true)
         {
-            return RequestClimateData(stationID, year, month, TimeIntervalType.HOURLY, keepHeader);
+            return RequestClimateData(stationID, year, month, ECDataIntervalType.HOURLY, keepHeader);
+        }
+
+        /// <summary>
+        /// request annual climate data
+        /// </summary>
+        /// <param name="year"></param>
+        /// <returns></returns>
+        public static string RequestAnnualClimateData(string stationID, int year, ECDataIntervalType timeInterval)
+        {
+            if (timeInterval == ECDataIntervalType.HOURLY) return RequestAnnualHourlyClimateData(stationID, year);
+            if (timeInterval == ECDataIntervalType.DAILY) return RequestAnnualDailyClimateData(stationID, year);
+            return "";
         }
 
         /// <summary>
@@ -155,7 +167,7 @@ namespace HAWKLORRY
         /// <returns></returns>
         public static string RequestAnnualDailyClimateData(string stationID, int year, bool keepHeader = true)
         {
-            return RequestClimateData(stationID, year, 8, TimeIntervalType.DAILY, keepHeader);
+            return RequestClimateData(stationID, year, 8, ECDataIntervalType.DAILY, keepHeader);
         }
 
     }
@@ -691,7 +703,7 @@ namespace HAWKLORRY
         {
             return string.Format("{0},{1},{2:F3},{3:F3},{4}",
                 ID,
-                getFileName(1840,1840,FormatType.ARCSWAT_TEXT,isPrecipitation,false),
+                getFileName(1840, 1840, FormatType.ARCSWAT_TEXT, ECDataIntervalType.DAILY,isPrecipitation, false),
                 Latitude,Longitude,Convert.ToInt32(Elevation));
         }
 
@@ -699,7 +711,7 @@ namespace HAWKLORRY
         {
             DbfRecord rec = new DbfRecord(dbf.Header);
             rec[0] = ID;
-            rec[1] = getFileName(1840, 1840, FormatType.ARCSWAT_DBF, isPrecipitation, false);
+            rec[1] = getFileName(1840, 1840, FormatType.ARCSWAT_DBF,ECDataIntervalType.DAILY, isPrecipitation, false);
             rec[2] = Latitude.ToString("F3");
             rec[3] = Longitude.ToString("F3");
             rec[4] = Convert.ToInt32(Elevation).ToString();
@@ -839,14 +851,18 @@ namespace HAWKLORRY
 
         public bool save(int[] fields,
             int startYear, int endYear, string destinationFolder, FormatType format,
-            TimeIntervalType timeInterval = TimeIntervalType.DAILY)
+            ECDataIntervalType timeInterval = ECDataIntervalType.DAILY)
         {
-            if (timeInterval == TimeIntervalType.MONTHLY) return false;
-            if (timeInterval == TimeIntervalType.HOURLY)
+            if (timeInterval == ECDataIntervalType.MONTHLY) return false;
+            if (timeInterval == ECDataIntervalType.HOURLY)
             {
                 if (format != FormatType.SIMPLE_CSV && format != FormatType.SIMPLE_TEXT) return false;
+                if (!IsHourlyAvailable) return false;
+
                 return save2Ascii(fields, startYear, endYear, destinationFolder, format,timeInterval);
             }
+
+            if (!IsDailyAvailable) return false;
                 
             //shorten the time range if possible
             //only apply for free foramt csv and txt format which is usually to do data analysis
@@ -895,17 +911,18 @@ namespace HAWKLORRY
             return ".txt";
         }
 
-        public string getFileName(int startYear, int endYear, FormatType type, bool isPrecipitation, bool containExtension = true)
+        public string getFileName(int startYear, int endYear, FormatType type, 
+            ECDataIntervalType timeInterval, bool isPrecipitation, bool containExtension = true)
         {
             string extension = containExtension ? getExtentionFromType(type) : "";
             if (type == FormatType.SIMPLE_CSV || type == FormatType.SIMPLE_TEXT)
             {
                 if(endYear > startYear)
-                    return string.Format("{0}_{1}_{2}_{3}{4}",
-                        _name.Replace(' ', '_'), _province, startYear, endYear, extension);
+                    return string.Format("{0}_{1}_{2}_{3}_{4}{5}",
+                        _name.Replace(' ', '_'), _province, startYear, endYear, timeInterval, extension);
                 else
-                    return string.Format("{0}_{1}_{2}{3}",
-                        _name.Replace(' ', '_'), _province, startYear, extension);
+                    return string.Format("{0}_{1}_{2}_{3}{4}",
+                        _name.Replace(' ', '_'), _province, startYear, timeInterval, extension);
             }
             else
             {
@@ -916,11 +933,11 @@ namespace HAWKLORRY
         }
 
         private bool save2Ascii(int[] fields,
-            int startYear, int endYear, string destinationFolder, FormatType format, TimeIntervalType timeInterval = TimeIntervalType.DAILY)
+            int startYear, int endYear, string destinationFolder, FormatType format, ECDataIntervalType timeInterval = ECDataIntervalType.DAILY)
         {
             //get the file name using station name
             string fileName = string.Format("{0}\\{1}",
-                Path.GetFullPath(destinationFolder), getFileName(startYear,endYear,format,true));  //precipitation
+                Path.GetFullPath(destinationFolder), getFileName(startYear,endYear,format, timeInterval, true));  //precipitation
 
             this.setProgress(0, string.Format("Processing station {0}", this));
             this.setProgress(0, fileName);
@@ -936,8 +953,21 @@ namespace HAWKLORRY
                 {
                     setProgress(processPercent, 
                         string.Format("Downloading data for station: {0}, year: {1}", this, i));
-                    string resultsForOneYear =
-                        ECRequestUtil.RequestAnnualDailyClimateData(ID, i, true); 
+                    string resultsForOneYear = "";
+                    if(timeInterval == ECDataIntervalType.DAILY)
+                        resultsForOneYear = ECRequestUtil.RequestAnnualDailyClimateData(ID, i);
+                    else if (timeInterval == ECDataIntervalType.HOURLY)
+                    {
+                        System.Text.StringBuilder sb = new StringBuilder();
+                        for (int month = 1; month <= 12; month++)
+                        {
+                            setProgress(processPercent,
+                                string.Format("Month: {0}", month));
+                            sb.AppendLine(ECRequestUtil.RequestHourlyClimateData(ID, i, month, month == 1));
+                        }
+                        resultsForOneYear = sb.ToString();
+                    }
+
                     if (resultsForOneYear.Length == 0)
                     {
                         addFailureYear(i);
@@ -975,11 +1005,11 @@ namespace HAWKLORRY
             return "";
         }
 
-        private bool write2FreeFormat(string resultsForOneYear, int[] fields, StreamWriter writer, bool needWriteHeader, FormatType format, TimeIntervalType timeInterval = TimeIntervalType.DAILY)
+        private bool write2FreeFormat(string resultsForOneYear, int[] fields, StreamWriter writer, bool needWriteHeader, FormatType format, ECDataIntervalType timeInterval = ECDataIntervalType.DAILY)
         {
             StringBuilder sb = new StringBuilder();
             int numofColumn = 27;
-            if (timeInterval == TimeIntervalType.HOURLY) numofColumn = 25;
+            if (timeInterval == ECDataIntervalType.HOURLY) numofColumn = 25;
 
             //make sure field is valid
             foreach (int field in fields)
@@ -1046,10 +1076,10 @@ namespace HAWKLORRY
             string timeAffix = getTimeAffix();
             string pFile = string.Format("{0}\\{1}", 
                 Path.GetFullPath(destinationFolder), 
-                getFileName(startYear,endYear,FormatType.ARCSWAT_TEXT,true));  //precipitation
+                getFileName(startYear,endYear,FormatType.ARCSWAT_TEXT, ECDataIntervalType.DAILY, true));  //precipitation
             string tFile = string.Format("{0}\\{1}",
-                Path.GetFullPath(destinationFolder), 
-                getFileName(startYear, endYear,FormatType.ARCSWAT_TEXT,false));  //temperature
+                Path.GetFullPath(destinationFolder),
+                getFileName(startYear, endYear, FormatType.ARCSWAT_TEXT, ECDataIntervalType.DAILY, false));  //temperature
 
             this.setProgress(0, string.Format("Processing station {0}", this));
             this.setProgress(0, pFile);
@@ -1136,11 +1166,11 @@ namespace HAWKLORRY
         {
             string timeAffix = getTimeAffix();
             string pFile = string.Format("{0}\\{1}",
-                Path.GetFullPath(destinationFolder), 
-                getFileName(startYear, endYear,FormatType.ARCSWAT_DBF,true));  //precipitation
+                Path.GetFullPath(destinationFolder),
+                getFileName(startYear, endYear, FormatType.ARCSWAT_DBF, ECDataIntervalType.DAILY, true));  //precipitation
             string tFile = string.Format("{0}\\{1}",
-                Path.GetFullPath(destinationFolder), 
-                getFileName(startYear, endYear, FormatType.ARCSWAT_DBF,false));  //temperature
+                Path.GetFullPath(destinationFolder),
+                getFileName(startYear, endYear, FormatType.ARCSWAT_DBF, ECDataIntervalType.DAILY, false));  //temperature
 
             this.setProgress(0, string.Format("Processing station {0}", this));
             this.setProgress(0, pFile);

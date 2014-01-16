@@ -185,7 +185,6 @@
     <Compile Include="DotNetZip\ZipInputStream.cs" />
     <Compile Include="DotNetZip\ZipOutputStream.cs" />
     <Compile Include="DotNetZip\ZipSegmentedStream.cs" />
-    <Compile Include="TimeIntervalType.cs" />
     <EmbeddedResource Include="csv\Resources\ExceptionMessage.resx" />
     <EmbeddedResource Include="Australia\FrmAustralia.resx">
       <DependentUpon>FrmAustralia.cs</DependentUpon>
