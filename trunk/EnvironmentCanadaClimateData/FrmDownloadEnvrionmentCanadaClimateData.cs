@@ -18,11 +18,22 @@ namespace HAWKLORRY
         private int[] _fields = null;
         private string _path = "";
         private int _startYear = 1840;
-        private int _endYear = 2013;
-        private static int[] FIELD_INDEX = { 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25 };
+        private int _endYear = 2013;        
 
         private List<ECStationInfo> _stations = null;
         private bool _isDownloadAllStations = false;
+
+        private static int[] DATA_FIELD_INDEX_DAILY = { 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25 };
+        private static string[] DATA_FIELD_NAME_DAILY = 
+        {   "Max Temp (°C)","Min Temp (°C)","Mean Temp (°C)","Heat Deg Days (°C)",
+            "Cool Deg Days (°C)","Total Rain (mm)","Total Snow (cm)","Total Precip (mm)",
+            "Snow on Grnd (cm)","Dir of Max Gust (10s deg)","Spd of Max Gust (km/h)"};
+
+        private static int[] DATA_FIELD_INDEX_HOURLY = { 6, 8, 10, 12, 14, 16, 18, 20, 22 };
+        private static string[] DATA_FIELD_NAME_HOURLY = 
+        {   "Temp (°C)", "Dew Point Temp (°C)", "Rel Hum (%)", "Wind Dir (10s deg)",
+            "Wind Spd (km/h)", "Visibility (km)", "Stn Press (kPa)", "Hmdx", "Wind Chill"
+        };
 
         public List<ECStationInfo> SelectedStations
         {
@@ -98,6 +109,11 @@ namespace HAWKLORRY
                 }                
             };
             
+            //the output time interval
+            this.rdbTimeIntervalDaily.CheckedChanged += (s, ee) => { this.updateTimeIntervalSelectionControl(); };
+            this.rdbTimeIntervalHourly.CheckedChanged += (s, ee) => { this.updateTimeIntervalSelectionControl(); };
+            this.rdbTimeIntervalMonthly.CheckedChanged += (s, ee) => { this.updateTimeIntervalSelectionControl(); };
+
             //the output format
             this.rdbFormatArcSWATDbf.CheckedChanged += (s, ee) => { updateFormatSelectionControl(); };
             this.rdbFormatArcSWATTxt.CheckedChanged += (s, ee) => { updateFormatSelectionControl(); };
@@ -113,9 +129,9 @@ namespace HAWKLORRY
                     foreach(int index in listFields.CheckedIndices)
                     {
                         if (index != ee.Index) 
-                            f.Add(FIELD_INDEX[index]);
+                            f.Add(DATA_FIELD_INDEX_DAILY[index]);
                     }
-                    if (ee.NewValue == CheckState.Checked) f.Add(FIELD_INDEX[ee.Index]);
+                    if (ee.NewValue == CheckState.Checked) f.Add(DATA_FIELD_INDEX_DAILY[ee.Index]);
 
                     _fields = null;
 
@@ -321,7 +337,7 @@ namespace HAWKLORRY
             message = "";
             try
             {
-                bool status = station.save(_fields, _startYear, _endYear, _path, Format);
+                bool status = station.save(_fields, _startYear, _endYear, _path, Format,TimeInterval);
                 if (!status)
                     message = station.Name + ": There is no data between "
                         + _startYear.ToString() + " and " + _endYear.ToString() + ". Please check output messages.";
@@ -351,6 +367,8 @@ namespace HAWKLORRY
         private void FrmDownloadEnvrionmentCanadaClimateData_Load(object sender, EventArgs e)
         {
             rdbFormatArcSWATTxt.Checked = true;
+            rdbTimeIntervalDaily.Checked = true;
+            rdbTimeIntervalMonthly.Enabled = false;
 
             updateFormatSelectionControl();
 
@@ -383,6 +401,40 @@ namespace HAWKLORRY
                 if (rdbFormatFreeText.Checked) return FormatType.SIMPLE_TEXT;
                 if (rdbFormatSWATInput.Checked) return FormatType.SWAT_TEXT;
                 return FormatType.SIMPLE_TEXT;
+            }
+        }
+
+        private void updateTimeIntervalSelectionControl()
+        {
+            listFields.Items.Clear();
+            string[] fields = null;
+
+            if (rdbTimeIntervalDaily.Checked)
+                fields = DATA_FIELD_NAME_DAILY;
+            else if (this.rdbTimeIntervalHourly.Checked)
+                fields = DATA_FIELD_NAME_HOURLY;
+
+            if (fields == null) return;
+
+            foreach (string f in fields)
+                listFields.Items.Add(f);
+
+            rdbFormatArcSWATDbf.Enabled = rdbTimeIntervalDaily.Checked;
+            rdbFormatArcSWATTxt.Enabled = rdbTimeIntervalDaily.Checked;
+            rdbFormatSWATInput.Enabled = rdbTimeIntervalDaily.Checked;
+
+            if (!rdbFormatFreeCSV.Checked && !rdbFormatFreeText.Checked)
+                rdbFormatFreeCSV.Checked = true;
+        }
+
+        private TimeIntervalType TimeInterval
+        {
+            get
+            {
+                if (rdbTimeIntervalDaily.Checked) return TimeIntervalType.DAILY;
+                if (rdbTimeIntervalHourly.Checked) return TimeIntervalType.HOURLY;
+                if (rdbTimeIntervalMonthly.Checked) return TimeIntervalType.MONTHLY;
+                return TimeIntervalType.DAILY;
             }
         }
 

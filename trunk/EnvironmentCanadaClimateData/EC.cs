@@ -18,11 +18,13 @@ namespace HAWKLORRY
     {
         private static string DOMAIN = "http://climate.weather.gc.ca";
 
-        private static string DAILY_DATA_REQUEST_URL_FORMAT = 
+        private static int HEADER_LINE_HOURLY = 17;
+        private static int HEADER_LINE_DAILY = 25;
+
+        private static string DATA_REQUEST_URL_FORMAT = 
             DOMAIN +
             "/climateData/bulkdata_e.html?" + 
-            "format=csv&stationID={0}&Year={1}&Month=8&Day=1&timeframe=2&submit=Download+Data";
-
+            "format=csv&stationID={0}&Year={1}&Month={2}&Day=1&timeframe={3}&submit=Download+Data";
 
         private static string[] SEARCH_TYPE = { "stnName", "stnProv" };
         private static string STATION_NAME_SEARCH_FORMAT = "txtStationName={0}&searchMethod=contains&";
@@ -89,21 +91,23 @@ namespace HAWKLORRY
         }
 
         /// <summary>
-        /// request annual daily climate data
+        /// request climate data
         /// </summary>
         /// <param name="year"></param>
         /// <returns></returns>
-        public static string RequestAnnualDailyClimateData(string stationID, int year, bool keepHeader = true)
+        private static string RequestClimateData(string stationID, int year, int month, TimeIntervalType interval, bool keepHeader = true)
         {
             string csv = sendRequest(
-                string.Format(DAILY_DATA_REQUEST_URL_FORMAT, stationID, year));
+                string.Format(DATA_REQUEST_URL_FORMAT, stationID, year, month, Convert.ToInt32(interval)));
 
             System.Text.StringBuilder sb = new StringBuilder();
             using (StringReader reader = new StringReader(csv))
             {
                 int lineNum = 0;
-                int headLine = 25;
-                if (!keepHeader) headLine = 26;
+                int headLine = HEADER_LINE_DAILY;
+                if (interval == TimeIntervalType.HOURLY)
+                    headLine = HEADER_LINE_HOURLY;
+                if (!keepHeader) headLine += 1;
                 while (reader.Peek() >= 0)
                 {
                     string line = reader.ReadLine();
@@ -119,6 +123,39 @@ namespace HAWKLORRY
             }
 
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// request hourly climate data
+        /// </summary>
+        /// <param name="year"></param>
+        /// <returns></returns>
+        public static string RequestHourlyClimateData(string stationID, int year, int month, bool keepHeader = true)
+        {
+            return RequestClimateData(stationID, year, month, TimeIntervalType.HOURLY, keepHeader);
+        }
+
+        /// <summary>
+        /// request annual hourly climate data
+        /// </summary>
+        /// <param name="year"></param>
+        /// <returns></returns>
+        public static string RequestAnnualHourlyClimateData(string stationID, int year)
+        {
+            System.Text.StringBuilder sb = new StringBuilder();
+            for (int i = 1; i <= 12; i++)
+                sb.AppendLine(RequestHourlyClimateData(stationID,year,i,i == 1));
+            return sb.ToString();
+        }
+
+        /// <summary>
+        /// request annual daily climate data
+        /// </summary>
+        /// <param name="year"></param>
+        /// <returns></returns>
+        public static string RequestAnnualDailyClimateData(string stationID, int year, bool keepHeader = true)
+        {
+            return RequestClimateData(stationID, year, 8, TimeIntervalType.DAILY, keepHeader);
         }
 
     }
@@ -801,8 +838,16 @@ namespace HAWKLORRY
         #endregion
 
         public bool save(int[] fields,
-            int startYear, int endYear, string destinationFolder, FormatType format)
+            int startYear, int endYear, string destinationFolder, FormatType format,
+            TimeIntervalType timeInterval = TimeIntervalType.DAILY)
         {
+            if (timeInterval == TimeIntervalType.MONTHLY) return false;
+            if (timeInterval == TimeIntervalType.HOURLY)
+            {
+                if (format != FormatType.SIMPLE_CSV && format != FormatType.SIMPLE_TEXT) return false;
+                return save2Ascii(fields, startYear, endYear, destinationFolder, format,timeInterval);
+            }
+                
             //shorten the time range if possible
             //only apply for free foramt csv and txt format which is usually to do data analysis
             //for SWAT/ArcSWAT format, this is checked in the calling function. For years without data, 
@@ -871,7 +916,7 @@ namespace HAWKLORRY
         }
 
         private bool save2Ascii(int[] fields,
-            int startYear, int endYear, string destinationFolder, FormatType format)
+            int startYear, int endYear, string destinationFolder, FormatType format, TimeIntervalType timeInterval = TimeIntervalType.DAILY)
         {
             //get the file name using station name
             string fileName = string.Format("{0}\\{1}",
@@ -903,7 +948,7 @@ namespace HAWKLORRY
                     setProgress(processPercent, "Writing data");
 
                     if (format == FormatType.SIMPLE_CSV || format == FormatType.SIMPLE_TEXT)
-                        hasResults = write2FreeFormat(resultsForOneYear, fields, writer, i == startYear, format);
+                        hasResults = write2FreeFormat(resultsForOneYear, fields, writer, i == startYear, format, timeInterval);
 
                     processPercent += 1;
                 }
@@ -930,12 +975,19 @@ namespace HAWKLORRY
             return "";
         }
 
-        private bool write2FreeFormat(string resultsForOneYear, int[] fields, StreamWriter writer, bool needWriteHeader, FormatType format)
+        private bool write2FreeFormat(string resultsForOneYear, int[] fields, StreamWriter writer, bool needWriteHeader, FormatType format, TimeIntervalType timeInterval = TimeIntervalType.DAILY)
         {
             StringBuilder sb = new StringBuilder();
+            int numofColumn = 27;
+            if (timeInterval == TimeIntervalType.HOURLY) numofColumn = 25;
+
+            //make sure field is valid
+            foreach (int field in fields)
+                if (field >= numofColumn || field < 0) return false;
+
             using (CachedCsvReader csv = new CachedCsvReader(new StringReader(resultsForOneYear), true))
             {
-                if (csv.FieldCount < 27) return false;
+                if (csv.FieldCount < numofColumn) return false;
 
                 string date = "";
                 if (needWriteHeader)
