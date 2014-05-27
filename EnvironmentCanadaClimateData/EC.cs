@@ -672,7 +672,7 @@ namespace HAWKLORRY
 
         public override string ToString()
         {
-            return string.Format("{0},{1}", _name, _province);
+            return string.Format("{0},{1},{2},{3}", _name, _province,_elevation,_id);
             //return string.Format("Name={0},Province={1},ID={2},Latitude={6},Longitude={7},Elevation={8},{3},{4},{5}",
             //    _name,_province,_id,
             //    _hourlyAvailability == null ? "" : _hourlyAvailability.ToString(),
@@ -739,6 +739,77 @@ namespace HAWKLORRY
         }
 
         #region Download Data
+
+        #region Data Cache
+
+        private string getDataForOneYear(int year, ECDataIntervalType timeInterval, int processPercent)
+        {
+            string cacheFile = getCacheFileName(year, timeInterval);
+
+            //not in cache, go to download and then write into cache file
+            if (!System.IO.File.Exists(cacheFile))
+            {
+                setProgress(processPercent, 
+                    string.Format("Downloading data for station: {0}, year: {1}", this, year));
+                string resultsForOneYear = "";
+                if (timeInterval == ECDataIntervalType.DAILY)
+                    resultsForOneYear = ECRequestUtil.RequestAnnualDailyClimateData(ID, year);
+                else if (timeInterval == ECDataIntervalType.HOURLY)
+                {
+                    System.Text.StringBuilder sb = new StringBuilder();
+                    for (int month = 1; month <= 12; month++)
+                    {
+                        setProgress(processPercent,
+                            string.Format("Month: {0}", month));
+                        sb.AppendLine(ECRequestUtil.RequestHourlyClimateData(ID, year, month, month == 1));
+                    }
+                    resultsForOneYear = sb.ToString();
+                }
+
+                //write to cache file
+                using (StreamWriter writer = new StreamWriter(cacheFile))
+                {
+                    writer.Write(resultsForOneYear);
+                }
+
+                return resultsForOneYear;
+            }
+
+            //read from cache file
+            setProgress(processPercent,
+                string.Format("Reading data from cache for station: {0}, year: {1}", this, year));
+            using(StreamReader reader = new StreamReader(cacheFile))
+            {
+                return reader.ReadToEnd();
+            }
+        }
+
+        private string getCacheFileName(int year, ECDataIntervalType timeInterval)
+        {
+            return CachePath + string.Format("{0}_{1}_{2}.csv", ID, year, timeInterval);
+        }
+
+        private string CachePath
+        {
+            get
+            {
+                string path = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\cache\";
+                if (!System.IO.Directory.Exists(path))
+                {
+                    try
+                    {
+                        System.IO.Directory.CreateDirectory(path);
+                    }
+                    catch (System.Exception e)
+                    {
+                        throw e;
+                    }
+                }
+                return path;
+            }
+        }
+
+        #endregion
 
         private static int TOTAL_PRECIPITATION_COL_INDEX = 19;
         private static int MAX_T_COL_INDEX = 5;
@@ -951,22 +1022,7 @@ namespace HAWKLORRY
             {
                 for (int i = startYear; i <= endYear; i++)
                 {
-                    setProgress(processPercent, 
-                        string.Format("Downloading data for station: {0}, year: {1}", this, i));
-                    string resultsForOneYear = "";
-                    if(timeInterval == ECDataIntervalType.DAILY)
-                        resultsForOneYear = ECRequestUtil.RequestAnnualDailyClimateData(ID, i);
-                    else if (timeInterval == ECDataIntervalType.HOURLY)
-                    {
-                        System.Text.StringBuilder sb = new StringBuilder();
-                        for (int month = 1; month <= 12; month++)
-                        {
-                            setProgress(processPercent,
-                                string.Format("Month: {0}", month));
-                            sb.AppendLine(ECRequestUtil.RequestHourlyClimateData(ID, i, month, month == 1));
-                        }
-                        resultsForOneYear = sb.ToString();
-                    }
+                    string resultsForOneYear = getDataForOneYear(i, timeInterval, processPercent);
 
                     if (resultsForOneYear.Length == 0)
                     {
@@ -1096,10 +1152,7 @@ namespace HAWKLORRY
             for (int i = startYear; i <= endYear; i++)
             {
                 //there is data, try to download
-                setProgress(processPercent, 
-                    string.Format("Downloading data for station: {0}, year: {1}", this, i));
-                string resultsForOneYear =
-                    ECRequestUtil.RequestAnnualDailyClimateData(ID, i, true);
+                string resultsForOneYear = getDataForOneYear(i, ECDataIntervalType.DAILY, processPercent);
                 if (resultsForOneYear.Length == 0)
                 {
                     addFailureYear(i);
@@ -1197,11 +1250,8 @@ namespace HAWKLORRY
             clearFailureYears();
             clearUncompletedYears();
             for (int i = startYear; i <= endYear; i++)
-            {                
-                setProgress(processPercent, 
-                    string.Format("Downloading data for station: {0}, year: {1}", this, i));
-                string resultsForOneYear =
-                    ECRequestUtil.RequestAnnualDailyClimateData(ID, i, true);
+            {
+                string resultsForOneYear = getDataForOneYear(i, ECDataIntervalType.DAILY, processPercent);
                 if (resultsForOneYear.Length == 0)
                 {
                     addFailureYear(i);
