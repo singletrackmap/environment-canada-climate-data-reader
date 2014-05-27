@@ -59,7 +59,11 @@ namespace HAWKLORRY
                     }
                     bRemoveAllSelected.Enabled = lstSelectedStations.Items.Count > 0;
                 };
+
             bRemoveAllSelected.Click += (s, ee) => { lstSelectedStations.Items.Clear(); };
+            bMoveDown.Click += (s, ee) => { moveSelectedStation(false); };
+            bMoveUp.Click += (s, ee) => { moveSelectedStation(true); };
+
             bSearch.Click += (s, ee) => 
                 {
                     lsvResultByName.Items.Clear();
@@ -112,6 +116,29 @@ namespace HAWKLORRY
             nudStartYear.Minimum = 1840;
             nudStartYear.Maximum = DateTime.Now.Year;
             nudStartYear.Value = 1840;
+        }
+
+        private void moveSelectedStation(bool isUp)
+        {
+            if (lstSelectedStations.Items.Count == 0) return;
+            if (lstSelectedStations.SelectedItem == null) return;
+
+            int newIndex = -1;
+            if (isUp)
+            {
+                if (lstSelectedStations.SelectedIndex <= 0) return;
+                newIndex = lstSelectedStations.SelectedIndex - 1;
+            }
+            else
+            {
+                if (lstSelectedStations.SelectedIndex >= lstSelectedStations.Items.Count - 1) return;
+                newIndex = lstSelectedStations.SelectedIndex + 1;
+            }
+
+            object info = lstSelectedStations.SelectedItem;
+            lstSelectedStations.Items.RemoveAt(lstSelectedStations.SelectedIndex);
+            lstSelectedStations.Items.Insert(newIndex, info);
+            lstSelectedStations.SelectedIndex = newIndex;
         }
 
         private string SearchSQL

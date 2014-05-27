@@ -60,6 +60,8 @@
             this.bCancel = new System.Windows.Forms.Button();
             this.bOK = new System.Windows.Forms.Button();
             this.dlgSaveSelectedStations = new System.Windows.Forms.SaveFileDialog();
+            this.bMoveUp = new System.Windows.Forms.Button();
+            this.bMoveDown = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tbByName.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudEndYear)).BeginInit();
@@ -320,6 +322,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.bMoveDown);
+            this.groupBox1.Controls.Add(this.bMoveUp);
             this.groupBox1.Controls.Add(this.bRemoveAllSelected);
             this.groupBox1.Controls.Add(this.lstSelectedStations);
             this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -334,7 +338,7 @@
             // 
             this.bRemoveAllSelected.Location = new System.Drawing.Point(6, 493);
             this.bRemoveAllSelected.Name = "bRemoveAllSelected";
-            this.bRemoveAllSelected.Size = new System.Drawing.Size(260, 23);
+            this.bRemoveAllSelected.Size = new System.Drawing.Size(79, 23);
             this.bRemoveAllSelected.TabIndex = 1;
             this.bRemoveAllSelected.Text = "Remove All";
             this.bRemoveAllSelected.UseVisualStyleBackColor = true;
@@ -343,7 +347,7 @@
             // 
             this.lstSelectedStations.Dock = System.Windows.Forms.DockStyle.Top;
             this.lstSelectedStations.FormattingEnabled = true;
-            this.lstSelectedStations.Location = new System.Drawing.Point(3, 18);
+            this.lstSelectedStations.Location = new System.Drawing.Point(3, 16);
             this.lstSelectedStations.Name = "lstSelectedStations";
             this.lstSelectedStations.Size = new System.Drawing.Size(266, 472);
             this.lstSelectedStations.TabIndex = 0;
@@ -444,6 +448,24 @@
             this.dlgSaveSelectedStations.DefaultExt = "csv";
             this.dlgSaveSelectedStations.Filter = "Station Information CSV files|*.csv";
             // 
+            // bMoveUp
+            // 
+            this.bMoveUp.Location = new System.Drawing.Point(93, 493);
+            this.bMoveUp.Name = "bMoveUp";
+            this.bMoveUp.Size = new System.Drawing.Size(79, 23);
+            this.bMoveUp.TabIndex = 2;
+            this.bMoveUp.Text = "Move Up";
+            this.bMoveUp.UseVisualStyleBackColor = true;
+            // 
+            // bMoveDown
+            // 
+            this.bMoveDown.Location = new System.Drawing.Point(185, 493);
+            this.bMoveDown.Name = "bMoveDown";
+            this.bMoveDown.Size = new System.Drawing.Size(79, 23);
+            this.bMoveDown.TabIndex = 3;
+            this.bMoveDown.Text = "Move Down";
+            this.bMoveDown.UseVisualStyleBackColor = true;
+            // 
             // FrmDefineStations
             // 
             this.AcceptButton = this.bOK;
@@ -511,5 +533,7 @@
         private System.Windows.Forms.Button bSearch;
         private System.Windows.Forms.Button bSaveSelectedStations;
         private System.Windows.Forms.SaveFileDialog dlgSaveSelectedStations;
+        private System.Windows.Forms.Button bMoveDown;
+        private System.Windows.Forms.Button bMoveUp;
     }
 }
