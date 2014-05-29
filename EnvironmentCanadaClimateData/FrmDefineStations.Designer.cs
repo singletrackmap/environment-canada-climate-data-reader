@@ -49,6 +49,8 @@
             this.tbFromMap = new System.Windows.Forms.TabPage();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.bMoveDown = new System.Windows.Forms.Button();
+            this.bMoveUp = new System.Windows.Forms.Button();
             this.bRemoveAllSelected = new System.Windows.Forms.Button();
             this.lstSelectedStations = new System.Windows.Forms.ListBox();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
@@ -60,8 +62,6 @@
             this.bCancel = new System.Windows.Forms.Button();
             this.bOK = new System.Windows.Forms.Button();
             this.dlgSaveSelectedStations = new System.Windows.Forms.SaveFileDialog();
-            this.bMoveUp = new System.Windows.Forms.Button();
-            this.bMoveDown = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tbByName.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudEndYear)).BeginInit();
@@ -334,6 +334,24 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Selected Stations";
             // 
+            // bMoveDown
+            // 
+            this.bMoveDown.Location = new System.Drawing.Point(185, 493);
+            this.bMoveDown.Name = "bMoveDown";
+            this.bMoveDown.Size = new System.Drawing.Size(79, 23);
+            this.bMoveDown.TabIndex = 3;
+            this.bMoveDown.Text = "Move Down";
+            this.bMoveDown.UseVisualStyleBackColor = true;
+            // 
+            // bMoveUp
+            // 
+            this.bMoveUp.Location = new System.Drawing.Point(93, 493);
+            this.bMoveUp.Name = "bMoveUp";
+            this.bMoveUp.Size = new System.Drawing.Size(79, 23);
+            this.bMoveUp.TabIndex = 2;
+            this.bMoveUp.Text = "Move Up";
+            this.bMoveUp.UseVisualStyleBackColor = true;
+            // 
             // bRemoveAllSelected
             // 
             this.bRemoveAllSelected.Location = new System.Drawing.Point(6, 493);
@@ -448,27 +466,9 @@
             this.dlgSaveSelectedStations.DefaultExt = "csv";
             this.dlgSaveSelectedStations.Filter = "Station Information CSV files|*.csv";
             // 
-            // bMoveUp
-            // 
-            this.bMoveUp.Location = new System.Drawing.Point(93, 493);
-            this.bMoveUp.Name = "bMoveUp";
-            this.bMoveUp.Size = new System.Drawing.Size(79, 23);
-            this.bMoveUp.TabIndex = 2;
-            this.bMoveUp.Text = "Move Up";
-            this.bMoveUp.UseVisualStyleBackColor = true;
-            // 
-            // bMoveDown
-            // 
-            this.bMoveDown.Location = new System.Drawing.Point(185, 493);
-            this.bMoveDown.Name = "bMoveDown";
-            this.bMoveDown.Size = new System.Drawing.Size(79, 23);
-            this.bMoveDown.TabIndex = 3;
-            this.bMoveDown.Text = "Move Down";
-            this.bMoveDown.UseVisualStyleBackColor = true;
-            // 
             // FrmDefineStations
             // 
-            this.AcceptButton = this.bOK;
+            this.AcceptButton = this.bSearch;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.bCancel;
