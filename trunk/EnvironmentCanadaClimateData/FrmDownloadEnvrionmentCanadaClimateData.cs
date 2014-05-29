@@ -95,6 +95,8 @@ namespace HAWKLORRY
                 {
                     SelectedStations = frm.SelectedStations;
                 }
+                else
+                    SelectedStations = SelectedStations; //for case when user doesn't click OK to add event handler.
             };
             bLoadSavedStations.Click += (s, ee) =>
                 {
@@ -255,20 +257,28 @@ namespace HAWKLORRY
                         }
                         else                    //multiple stations
 	                    {
-                            bool totalStatus = false;
-                            StringBuilder sb = new StringBuilder();
-                            sb.AppendLine("------------ Summary ------------");
-                            foreach (ECStationInfo onestation in _stations)
+                            //needs to write into one file
+                            if (Format == FormatType.SWAT_TEXT)
                             {
-                                bool status = downloadOneStation(onestation, out msg);
-                                totalStatus |= status;
 
-                                if (msg.Length > 0)
-                                    sb.AppendLine(msg);
                             }
+                            else
+                            {
+                                bool totalStatus = false;
+                                StringBuilder sb = new StringBuilder();
+                                sb.AppendLine("------------ Summary ------------");
+                                foreach (ECStationInfo onestation in _stations)
+                                {
+                                    bool status = downloadOneStation(onestation, out msg);
+                                    totalStatus |= status;
 
-                            showInformationWindow("Finished." + (totalStatus ? "" : "Please check messages in the message window."));
-                            backgroundWorker1.ReportProgress(_maxValueofProgressBar, sb.ToString());                            
+                                    if (msg.Length > 0)
+                                        sb.AppendLine(msg);
+                                }
+
+                                showInformationWindow("Finished." + (totalStatus ? "" : "Please check messages in the message window."));
+                                backgroundWorker1.ReportProgress(_maxValueofProgressBar, sb.ToString());                            
+                            }
 	                    }
                         
                     }
