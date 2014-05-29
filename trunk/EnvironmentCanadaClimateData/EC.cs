@@ -989,11 +989,11 @@ namespace HAWKLORRY
             if (type == FormatType.SIMPLE_CSV || type == FormatType.SIMPLE_TEXT)
             {
                 if(endYear > startYear)
-                    return string.Format("{0}_{1}_{2}_{3}_{4}{5}",
-                        _name.Replace(' ', '_'), _province, startYear, endYear, timeInterval, extension);
+                    return string.Format("{0}_{1}_{6}_{2}_{3}_{4}{5}",
+                        _name.Replace(' ', '_'), _province, startYear, endYear, timeInterval, extension,ID);
                 else
-                    return string.Format("{0}_{1}_{2}_{3}{4}",
-                        _name.Replace(' ', '_'), _province, startYear, timeInterval, extension);
+                    return string.Format("{0}_{1}_{6}_{2}_{3}{4}",
+                        _name.Replace(' ', '_'), _province, startYear, timeInterval, extension,ID);
             }
             else
             {
